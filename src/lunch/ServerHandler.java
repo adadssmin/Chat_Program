@@ -260,10 +260,13 @@ public class ServerHandler extends Thread {
 					// 만들어져 있는 방 전체 보기 -------------------------------------------------
 					String roomListLine = "";
 					for (int i = 0; i < roomListLine.length(); i++) {
-						roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" + totalRoomList.get(i).getTitle()
-								+ "@" + totalRoomList.get(i).getRoom_Password() + "@"
-								+ totalRoomList.get(i).getUser_Count() + "@" + totalRoomList.get(i).getAdmin() + "@"
-								+ totalRoomList.get(i).getPriv() + "@" + totalRoomList.get(i).getRoomInUserList().size()
+						roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+								+ totalRoomList.get(i).getTitle() + "@" 
+								+ totalRoomList.get(i).getRoom_Password() + "@"
+								+ totalRoomList.get(i).getUser_Count() + "@" 
+								+ totalRoomList.get(i).getAdmin() + "@"
+								+ totalRoomList.get(i).getPriv() + "@" 
+								+ totalRoomList.get(i).getRoomInUserList().size()
 								+ "-");
 					}
 
@@ -309,9 +312,11 @@ public class ServerHandler extends Thread {
 						folder.mkdir();
 						System.out.println("[폴더 생성]");
 					}
+				} else if (line[0].compareTo(Protocol.ENTER) == 0) {// 방입장
+					
 				}
 			}
-			bReader.close();
+ 			bReader.close();
 			pWriter.close();
 			socket.close();
 		} catch (SocketException se) {

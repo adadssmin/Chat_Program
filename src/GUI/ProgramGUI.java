@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,12 +21,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import room.AddRoom;
+
 import java.awt.event.ActionListener;
+import java.io.PrintWriter;
 import java.awt.event.ActionEvent;
 
 public class ProgramGUI extends JFrame implements ActionListener {
 	public JPanel pnl_Parent, pnl_Friend, pnl_ChatList, pnl_Menu, pnl_back, pnl_North, pnl_South, pnl_Profile,
-			pnl_Chat;
+			pnl_Chat, pnl_ChatList_set;
 	public JButton btn_Friend, btn_ChatList, btn_Profile, btn_FriendList, btn_Chat1, btn_Chat2, btn_Chat3, btn_Chat4,
 			btn_Chat5, btn_Search, btn_addChat, btn_Setting, btn_ModifyId, btn_ModifyEmail, btn_ChgPw, btn_ChgPic,
 			btn_Chanel;
@@ -37,9 +41,13 @@ public class ProgramGUI extends JFrame implements ActionListener {
 	private Image img_ChatList, changeImg2, img_Profile, img_Search, changeImg_Search, img_addChat, changeImg_addChat,
 			changeImg_Profile, img_Chanel, changeImg_Chanel, img_Friend, changeImg_Friend, img_Setting,
 			changeImg_Setting;
+	
+	public AddRoom[] addRoom;
+	public PrintWriter pWriter;
 
-	public ProgramGUI() {
-		ProfileGUI();
+	public ProgramGUI(PrintWriter pWriter) {
+		this.pWriter = pWriter;
+		ProfileGUI(pWriter);
 //		EventQueue.invokeLater(new Runnable() {
 //			public void run() {
 //				try {
@@ -51,7 +59,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 //		});
 	}
 
-	public void ProfileGUI() {
+	public void ProfileGUI(PrintWriter pWriter) {
 		pnl_Menu = new JPanel();
 		pnl_Menu.setBounds(0, 0, 142, 719);
 		pnl_Menu.setBackground(new Color(173, 216, 230));
@@ -80,8 +88,14 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		// 채팅목록 패널
 		pnl_ChatList = new JPanel();
 		pnl_ChatList.setBackground(new Color(245, 245, 245));
-		pnl_ChatList.setBounds(0, 0, 1002, 719);
+		pnl_ChatList.setBounds(0, 0, 1002, 100);
 		pnl_ChatList.setLayout(null);
+		pnl_ChatList.setBackground(Color.gray);
+//		pnl_ChatList.setLayout(new BoxLayout(pnl_ChatList, BoxLayout.Y_AXIS));
+		
+//		pnl_ChatList_set = new JPanel();
+//		pnl_ChatList_set.setLayout(new BoxLayout(pnl_ChatList_set, BoxLayout.X_AXIS));
+//		pnl_ChatList.add(pnl_ChatList_set);
 
 		pnl_Parent.add(pnl_ChatList); // 첫 실행시 초기화면
 
@@ -175,50 +189,51 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		lbl_ChatList.setFont(new Font("굴림", Font.BOLD, 25));
 		lbl_ChatList.setBounds(39, 24, 139, 51);
 		pnl_ChatList.add(lbl_ChatList);
+//		pnl_ChatList_set.add(Box.createHorizontalGlue());
 
-//		dp = new DetailPanel[100];
-//		
-//		pnl_Chat = new JPanel(new GridLayout(100, 2, 10, 10)); // 100개
+		addRoom = new AddRoom[100];
+		pnl_Chat = new JPanel(new GridLayout(100, 2, 10, 10)); // 100개
+		pnl_Chat.setBounds(0, 100, 1002, 100);
+//		pnl_Chat.setPreferredSize(new Dimension(921, 465));
+		pnl_Chat.setBackground(Color.blue);
+		for (int i = 0; i < 100; i++) {
+			addRoom[i] = new AddRoom(pWriter);
+			pnl_Chat.add(addRoom[i]);
+		}
+		JScrollPane scrollRoomList = new JScrollPane(pnl_Chat);
+		scrollRoomList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollRoomList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollRoomList.getVerticalScrollBar().setValue(scrollRoomList.getVerticalScrollBar().getMaximum());
+		pnl_Parent.add(pnl_Chat);
+		
+//		pnl_Chat = new JPanel();
+//		pnl_Chat.setLayout(new BoxLayout(pnl_Chat, BoxLayout.Y_AXIS));
 //		pnl_Chat.setPreferredSize(new Dimension(921, 558));
-//		for (int i = 0; i < 100; i++) {
-//			dp[i] = new DetailPanel(br, pw);
-//			pnl_Chat.add(dp[i]);
-//		}
-//		JScrollPane scrollRoomList = new JScrollPane(centerPanel);
-//		scrollRoomList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//		scrollRoomList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//		scrollRoomList.getVerticalScrollBar().setValue(scrollRoomList.getVerticalScrollBar().getMaximum());
 		
-		
-		pnl_Chat = new JPanel();
-		pnl_Chat.setLayout(new BoxLayout(pnl_Chat, BoxLayout.Y_AXIS));
-		pnl_Chat.setPreferredSize(new Dimension(921, 558));
-		pnl_ChatList.add(pnl_Chat);
-		
-		btn_Chat1 = new JButton("chat 1");
-		btn_Chat1.setBackground(new Color(245, 245, 245));
-		btn_Chat1.setBounds(39, 87, 921, 93);
-		pnl_Chat.add(btn_Chat1);
-
-		btn_Chat2 = new JButton("chat 2");
-		btn_Chat2.setBackground(new Color(245, 245, 245));
-		btn_Chat2.setBounds(39, 197, 921, 93);
-		pnl_Chat.add(btn_Chat2);
-
-		btn_Chat3 = new JButton("chat 3");
-		btn_Chat3.setBackground(new Color(245, 245, 245));
-		btn_Chat3.setBounds(39, 302, 921, 93);
-		pnl_Chat.add(btn_Chat3);
-
-		btn_Chat4 = new JButton("chat 4");
-		btn_Chat4.setBackground(new Color(245, 245, 245));
-		btn_Chat4.setBounds(39, 405, 921, 93);
-		pnl_Chat.add(btn_Chat4);
-
-		btn_Chat5 = new JButton("chat 5");
-		btn_Chat5.setBackground(new Color(245, 245, 245));
-		btn_Chat5.setBounds(39, 508, 921, 93);
-		pnl_Chat.add(btn_Chat5);
+//		btn_Chat1 = new JButton("chat 1");
+//		btn_Chat1.setBackground(new Color(245, 245, 245));
+//		btn_Chat1.setBounds(39, 87, 921, 93);
+//		pnl_Chat.add(btn_Chat1);
+//
+//		btn_Chat2 = new JButton("chat 2");
+//		btn_Chat2.setBackground(new Color(245, 245, 245));
+//		btn_Chat2.setBounds(39, 197, 921, 93);
+//		pnl_Chat.add(btn_Chat2);
+//
+//		btn_Chat3 = new JButton("chat 3");
+//		btn_Chat3.setBackground(new Color(245, 245, 245));
+//		btn_Chat3.setBounds(39, 302, 921, 93);
+//		pnl_Chat.add(btn_Chat3);
+//
+//		btn_Chat4 = new JButton("chat 4");
+//		btn_Chat4.setBackground(new Color(245, 245, 245));
+//		btn_Chat4.setBounds(39, 405, 921, 93);
+//		pnl_Chat.add(btn_Chat4);
+//
+//		btn_Chat5 = new JButton("chat 5");
+//		btn_Chat5.setBackground(new Color(245, 245, 245));
+//		btn_Chat5.setBounds(39, 508, 921, 93);
+//		pnl_Chat.add(btn_Chat5);
 
 		// 검색 버튼
 		icon_Search = new ImageIcon(".\\icon\\search.png");
@@ -339,6 +354,14 @@ public class ProgramGUI extends JFrame implements ActionListener {
 			pnl_Parent.add(pnl_ChatList);
 			pnl_Parent.repaint();
 			pnl_Parent.revalidate();
+		}
+	}
+	
+	public void pnlClear() {
+		pnl_ChatList.removeAll();
+		for (int i = 0; i < 100; i++) {
+			addRoom[i] = new AddRoom(pWriter);
+			pnl_ChatList.add(addRoom[i]);
 		}
 	}
 }
