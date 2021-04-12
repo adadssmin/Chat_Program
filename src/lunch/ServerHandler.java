@@ -221,14 +221,14 @@ public class ServerHandler extends Thread {
 					//만들어진 방 확인 
 					pstmt = conn.prepareStatement(qurey);
 					ResultSet rs = pstmt.executeQuery();
-					int priNumber = 0;//방 고유번호
+					int priNumber = 0;//방 고유번호 설정
 					int count = 0;
 					while (rs.next()) {//방 정보가 있다면?
 						count++;
 						priNumber = rs.getInt("room_Num");
 					}
 					if (count != 0) {
-						roomTemp.setRoom_Num(priNumber);//방 고유번호 설정
+						roomTemp.setRoom_Num(priNumber);//방 고유번호 설
 						roomTemp.roomInUserList.add(this);
 						totalRoomList.add(roomTemp);
 						UserRoom = roomTemp;
