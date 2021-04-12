@@ -8,6 +8,6 @@ public class Protocol {
 	public static final String LOGOUT = "120";
 	public static final String MAKEROOM = "200";//방만들기
 	public static final String MAKEROOM_OK = "201";//방만들기 성공
-	public static final String MAKEROOM_PRIV_OK = "202";//방만든 유저 성공
+	public static final String MAKEROOM_ADMIN_OK = "202";//방만든 유저 성공
 	
 }

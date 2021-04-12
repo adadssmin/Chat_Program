@@ -28,8 +28,8 @@ public class Server {
 			standbyUserList = new ArrayList<>(); //대기중인 사용자
 			totalRoomList = new ArrayList<>(); //전체 방 리스트
 			
+			timeWatcher("[서버 준비 완료]");
 			while (true) {
-				timeWatcher("[서버 준비 완료]");
 				Socket socket = server.accept();
 				ServerHandler handler = new ServerHandler(socket, allUserList
 							, standbyUserList, totalRoomList, conn);

@@ -20,6 +20,7 @@ import javax.swing.JPasswordField;
 import GUI.ProgramGUI;
 import Login.Join;
 import Login.Login;
+import data.Room;
 import room.MakeRoom;
 
 public class MainAction extends JFrame implements ActionListener, Runnable {
@@ -68,9 +69,9 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 		login.btn_Login.addActionListener(this);// 로그인 버튼
 		login.btn_Join.addActionListener(this);// 회원가입 버튼
 		programGUI.btn_addChat.addActionListener(this);
-		makeRoom.makeBtn.addActionListener(this);
-		makeRoom.cb.addActionListener(this);
-		makeRoom.cancelBtn.addActionListener(this);
+		makeRoom.btn_done.addActionListener(this);
+		makeRoom.chckbxNewCheckBox.addActionListener(this);
+		makeRoom.btn_Cancle.addActionListener(this);
 
 		join.addWindowListener(new WindowAdapter() {
 			@Override
@@ -87,6 +88,14 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 				login.setVisible(true);
 				pWriter.println(Protocol.LOGOUT + ">" + "message");
 				pWriter.flush();
+				try {
+					bReader.close();
+					pWriter.close();
+					socket.close();
+					dispose();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 		});
 	}
@@ -114,17 +123,17 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 			login.pwField_Pw.setText("");
 		} else if (e.getSource() == programGUI.btn_addChat) {
 			makeRoom.setVisible(true);
-		} else if (e.getSource() == makeRoom.cb) {
-			if (makeRoom.cb.isSelected()) {
-				makeRoom.pfPassword.setEditable(true);
+		} else if (e.getSource() == makeRoom.chckbxNewCheckBox) {
+			if (makeRoom.chckbxNewCheckBox.isSelected()) {
+				makeRoom.passwordField_RoomPw.setEditable(true);
 			} else {
-				makeRoom.pfPassword.setEditable(false);
+				makeRoom.passwordField_RoomPw.setEditable(false);
 			}
-		} else if (e.getSource() == makeRoom.makeBtn) {
-			String room_title = makeRoom.tfId.getText();
-			String room_Password = getPassword(makeRoom.pfPassword);
-			String userCount = (String) makeRoom.combo1.getSelectedItem();
-			int priv = makeRoom.cb.isSelected() ? 1 : 0;// 선택되면 1(비밀방)
+		} else if (e.getSource() == makeRoom.btn_done) {
+			String room_title = makeRoom.txtField_RoomName.getText();
+			String room_Password = getPassword(makeRoom.passwordField_RoomPw);
+			String userCount = (String) makeRoom.cb_Persons.getSelectedItem();
+			int priv = makeRoom.chckbxNewCheckBox.isSelected() ? 1 : 0;// 선택되면 1(비밀방)
 
 			if (room_title.length() == 0) {
 				JOptionPane.showMessageDialog(this, "제목을 입력해주세요");
@@ -137,28 +146,30 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 					pWriter.println(Protocol.MAKEROOM + ">" + line);
 					pWriter.flush();
 					
-					makeRoom.tfId.setText("");
-					makeRoom.pfPassword.setText("");
-					makeRoom.combo1.setSelectedIndex(0);
-					makeRoom.cb.setSelected(false);
+					makeRoom.txtField_RoomName.setText("");
+					makeRoom.passwordField_RoomPw.setText("");
+					makeRoom.cb_Persons.setSelectedIndex(0);
+					makeRoom.chckbxNewCheckBox.setSelected(false);
 				} else if (priv == 0) {//공개방
 					String line = "";
 					line += (room_title + "@" + userCount + "@" + priv);
 					pWriter.println(Protocol.MAKEROOM + ">" + line);
 					pWriter.flush();
 					
-					makeRoom.tfId.setText("");
-					makeRoom.pfPassword.setText("");
-					makeRoom.combo1.setSelectedIndex(0);
-					makeRoom.cb.setSelected(false);
+					makeRoom.txtField_RoomName.setText("");
+					makeRoom.passwordField_RoomPw.setText("");
+					makeRoom.cb_Persons.setSelectedIndex(0);
+					makeRoom.chckbxNewCheckBox.setSelected(false);
 				}
 			}
-		} else if (e.getSource() == makeRoom.cancelBtn) {
+			
 			makeRoom.setVisible(false);
-			makeRoom.tfId.setText("");
-			makeRoom.pfPassword.setText("");
-			makeRoom.combo1.setSelectedIndex(0);
-			makeRoom.cb.setSelected(false);
+		} else if (e.getSource() == makeRoom.btn_Cancle) {
+			makeRoom.setVisible(false);
+			makeRoom.txtField_RoomName.setText("");
+			makeRoom.passwordField_RoomPw.setText("");
+			makeRoom.cb_Persons.setSelectedIndex(0);
+			makeRoom.chckbxNewCheckBox.setSelected(false);
 		}
 	}
 
@@ -176,10 +187,32 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 				} else if (line[0].compareTo(Protocol.LOGIN_NO) == 0) {// 로그인 실패
 					JOptionPane.showMessageDialog(this, line[1]);
 					System.out.println("[로그인 실패]");
+					bReader.close();
+					pWriter.close();
+					socket.close();
 				} else if (line[0].compareTo(Protocol.LOGIN_OK) == 0) {// 로그인 성공
 					login.setVisible(false);
 					programGUI.setVisible(true);
 				} else if (line[0].compareTo(Protocol.LOGOUT) == 0) {// 로그아웃
+					programGUI.setVisible(false);
+					login.setVisible(true);
+					pWriter.println(Protocol.LOGOUT + ">" + "message");
+					pWriter.flush();
+				} else if (line[0].compareTo(Protocol.MAKEROOM_OK) == 0) {
+					//방 별로 자른것
+					String roomListAll[] = line[1].split("-");//존재하는 방을 모두 보여줌
+					for (int i = 0; i < roomListAll.length; i++) {
+						System.out.println(roomListAll[i] + "/");
+					}
+					
+					//방 세부 정보별로 자른것
+					String roomListInfo[];
+					programGUI.pnl_Chat.removeAll();//새로고침
+					for (int i = 0; i < roomListAll.length; i++) {
+						roomListInfo = roomListAll[i].split("@");
+						
+//						programGUI.addRoomPnl(roomListInfo[1]);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

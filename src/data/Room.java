@@ -104,8 +104,7 @@ public class Room {
 
 	@Override
 	public String toString() {
-		return "Room [room_Num=" + room_Num + ", title=" + title + ", room_Password=" + room_Password + ", user_Count="
-				+ user_Count + ", admin=" + admin + ", priv=" + priv + ", roomInUserList=" + roomInUserList
-				+ "]";
+		return "room_Num: " + room_Num + ", title: " + title + ", room_Password: " + room_Password + ", user_Count: "
+				+ user_Count + ", admin: " + admin + ", priv: " + priv + ", roomInUserList: " + roomInUserList;
 	}
 }
