@@ -16,12 +16,14 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import lunch.Protocol;
 import room.AddRoom;
 
 import java.awt.event.ActionListener;
@@ -259,14 +261,16 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		btn_addChat.addActionListener(this);
 		
 		//생성되어있는 대화방 불러오기
-		addRoom = new AddRoom[20];
+		addRoom = new AddRoom[15];
 		pnl_Chat = new JPanel(); // 100개
 		pnl_Chat.setBackground(new Color(245, 245, 245));
-		pnl_Chat.setLayout(new GridLayout(20, 1));
-		for (int i = 1; i < 20; i++) {
+		pnl_Chat.setLayout(new GridLayout(15, 1));
+		for (int i = 1; i < 15; i++) {
 			addRoom[i] = new AddRoom(bReader, pWriter);
 			addRoom[i].setBackground(new Color(245, 245, 245));
 			pnl_Chat.add(addRoom[i]);
+			pnl_Chat.revalidate();
+			pnl_Chat.repaint();
 		}
 		scrollRoomList = new JScrollPane(pnl_Chat);
 		scrollRoomList.setBackground(new Color(245, 245, 245));
@@ -275,6 +279,8 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		scrollRoomList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollRoomList.getVerticalScrollBar().setUnitIncrement(16);
 		scrollRoomList.setViewportView(pnl_Chat);
+		scrollRoomList.revalidate();
+		scrollRoomList.repaint();
 		pnl_Chanel.add(scrollRoomList);
 
 		// 프로필 버튼 이미지 셋팅
@@ -348,81 +354,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		setResizable(false);
 		setBounds(100, 100, 1148, 748);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-	}
-
-	public void CreateChatRoom() {
-		String[] combo = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-
-		JDialog dl_addChat = new JDialog();
-		dl_addChat.setVisible(true);
-		dl_addChat.setSize(585, 395);
-		dl_addChat.setLocationRelativeTo(null);
-		dl_addChat.setResizable(false);
-		dl_addChat.getContentPane().setLayout(null);
-
-		JPanel pnl = new JPanel();
-		pnl.setBackground(new Color(173, 216, 230));
-		pnl.setBounds(0, 0, 567, 347);
-		dl_addChat.getContentPane().add(pnl);
-		pnl.setLayout(null);
-
-		JLabel lbl_Logo = new JLabel("New Chat");
-		lbl_Logo.setBounds(25, 6, 186, 63);
-		lbl_Logo.setForeground(Color.WHITE);
-		lbl_Logo.setFont(new Font("Arial", Font.BOLD, 35));
-		pnl.add(lbl_Logo);
-
-		JLabel lbl_RoomName = new JLabel("방제목");
-		lbl_RoomName.setBounds(84, 122, 99, 38);
-		lbl_RoomName.setHorizontalAlignment(SwingConstants.LEFT);
-		lbl_RoomName.setFont(new Font("굴림", Font.BOLD, 20));
-		pnl.add(lbl_RoomName);
-
-		JLabel lbl_RoomPw = new JLabel("비밀번호");
-		lbl_RoomPw.setBounds(84, 177, 99, 38);
-		lbl_RoomPw.setHorizontalAlignment(SwingConstants.LEFT);
-		lbl_RoomPw.setFont(new Font("굴림", Font.BOLD, 20));
-		pnl.add(lbl_RoomPw);
-
-		JLabel lbl_Persons = new JLabel("인원");
-		lbl_Persons.setBounds(363, 80, 72, 30);
-		lbl_Persons.setFont(new Font("굴림", Font.BOLD, 20));
-		lbl_Persons.setHorizontalAlignment(SwingConstants.CENTER);
-		pnl.add(lbl_Persons);
-
-		JTextField txtField_RoomName = new JTextField();
-		txtField_RoomName.setBounds(184, 122, 294, 33);
-		pnl.add(txtField_RoomName);
-		txtField_RoomName.setColumns(10);
-
-		JTextField txtField_RoomPw = new JTextField();
-		txtField_RoomPw.setBounds(184, 177, 294, 33);
-		txtField_RoomPw.setEditable(false);
-		txtField_RoomPw.setEnabled(false);
-		txtField_RoomPw.setColumns(10);
-		pnl.add(txtField_RoomPw);
-
-		JComboBox cb_Persons = new JComboBox(combo);
-		cb_Persons.setBounds(433, 82, 45, 30);
-		cb_Persons.setEditable(true);
-		pnl.add(cb_Persons);
-
-		JCheckBox chckbxNewCheckBox = new JCheckBox("");
-		chckbxNewCheckBox.setBounds(488, 168, 55, 47);
-		chckbxNewCheckBox.setFont(new Font("굴림", Font.BOLD, 17));
-		pnl.add(chckbxNewCheckBox);
-		chckbxNewCheckBox.setBackground(new Color(173, 216, 230));
-
-		JButton btn_done = new JButton("방생성");
-		btn_done.setBounds(121, 273, 155, 38);
-		btn_done.setBackground(new Color(173, 216, 230));
-		pnl.add(btn_done);
-
-		JButton btn_Cancle = new JButton("취소");
-		btn_Cancle.setBounds(290, 273, 155, 38);
-		btn_Cancle.setBackground(new Color(173, 216, 230));
-		pnl.add(btn_Cancle);
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	public void ChatRoomGUI() {
@@ -541,20 +473,22 @@ public class ProgramGUI extends JFrame implements ActionListener {
 			pnl_Parent.revalidate();
 		}
 
-		// 채팅방 생성버튼 클릭시
-		if (ob == btn_addChat) {
-			CreateChatRoom();
-		} else if (ob == btn_Search) {
-			System.out.println("검색창");
-		}
+//		// 채팅방 생성버튼 클릭시
+//		if (ob == btn_addChat) {
+//			CreateChatRoom();
+//		} else if (ob == btn_Search) {
+//			System.out.println("검색창");
+//		}
 	}
 
 	public void pnlClear() {
 		pnl_Chat.removeAll();
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 15; i++) {
 			addRoom[i] = new AddRoom(bReader, pWriter);
 			addRoom[i].setBackground(new Color(245, 245, 245));
 			pnl_Chat.add(addRoom[i]);
+			pnl_Chat.revalidate();
+			pnl_Chat.repaint();
 		}
 	}
 }

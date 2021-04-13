@@ -29,7 +29,7 @@ public class MakeRoom extends JFrame {
 	public JButton btn_done, btn_Cancle;
 
 	public MakeRoom() {
-		String[] combo = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+		String[] combo = {"2", "3", "4", "5", "6", "7", "8", "9", "10"};
 		
 		dl_addChat = new JDialog();
 		dl_addChat.setVisible(false);

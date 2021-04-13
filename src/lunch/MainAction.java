@@ -95,6 +95,12 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 				pWriter.flush();
 			}
 		});
+		makeRoom.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				programGUI.setVisible(true);
+			}
+		});
 	}
 
 	@Override
@@ -105,7 +111,8 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 		} else if (e.getSource() == login.btn_Login) {// 로그인 버튼 click
 			String id = login.textField_Id.getText();
 			String password = getPassword(login.pwField_Pw);
-
+			String ip = login.txtField_Ip.getText();
+			String port = login.txtField_Port.getText();
 			if (id.length() == 0) {
 				JOptionPane.showMessageDialog(null, "아이디를 입력해주세요");
 			} else if (password.length() == 0) {
@@ -118,15 +125,18 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 			}
 			login.textField_Id.setText("");
 			login.pwField_Pw.setText("");
-		} else if (e.getSource() == programGUI.btn_addChat) { //방만들기 버튼 click
+			login.txtField_Ip.setText("");
+			login.txtField_Port.setText("");
+		} else if (e.getSource() == programGUI.btn_addChat) { // 방만들기 버튼 click
+			programGUI.setVisible(false);
 			makeRoom.setVisible(true);
-		} else if (e.getSource() == makeRoom.chckbxNewCheckBox) { //비밀번호 체크 click
+		} else if (e.getSource() == makeRoom.chckbxNewCheckBox) { // 비밀번호 체크 click
 			if (makeRoom.chckbxNewCheckBox.isSelected()) {
 				makeRoom.passwordField_RoomPw.setEditable(true);
 			} else {
 				makeRoom.passwordField_RoomPw.setEditable(false);
 			}
-		} else if (e.getSource() == makeRoom.btn_done) { //만들기 버튼 click
+		} else if (e.getSource() == makeRoom.btn_done) { // 만들기 버튼 click
 			String room_title = makeRoom.txtField_RoomName.getText();
 			String room_Password = getPassword(makeRoom.passwordField_RoomPw);
 			String userCount = (String) makeRoom.cb_Persons.getSelectedItem();
@@ -142,17 +152,17 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 					line += (room_title + "@" + room_Password + "@" + userCount + "@" + priv);
 					pWriter.println(Protocol.MAKEROOM + ">" + line);
 					pWriter.flush();
-					
+
 					makeRoom.txtField_RoomName.setText("");
 					makeRoom.passwordField_RoomPw.setText("");
 					makeRoom.cb_Persons.setSelectedIndex(0);
 					makeRoom.chckbxNewCheckBox.setSelected(false);
-				} else if (priv == 0) {//공개방
+				} else if (priv == 0) {// 공개방
 					String line = "";
 					line += (room_title + "@" + userCount + "@" + priv);
 					pWriter.println(Protocol.MAKEROOM + ">" + line);
 					pWriter.flush();
-					
+
 					makeRoom.txtField_RoomName.setText("");
 					makeRoom.passwordField_RoomPw.setText("");
 					makeRoom.cb_Persons.setSelectedIndex(0);
@@ -160,6 +170,7 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 				}
 			}
 			makeRoom.setVisible(false);
+			programGUI.setVisible(true);
 		} else if (e.getSource() == makeRoom.btn_Cancle) {
 			makeRoom.setVisible(false);
 			makeRoom.txtField_RoomName.setText("");
@@ -192,42 +203,55 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 					pWriter.println(Protocol.LOGOUT + ">" + "message");
 					pWriter.flush();
 				} else if (line[0].compareTo(Protocol.MAKEROOM_OK) == 0) {// 방 생성 성공
-					//방 별로 자른것
-					String allRoom[] = line[1].split("-");//존재하는 방을 모두 보여줌
+					// 방 별로 자른것
+					String allRoom[] = line[1].split("-");// 존재하는 방을 모두 보여줌
 					for (int i = 0; i < allRoom.length; i++) {
 						System.out.println(allRoom[i] + "/");
 					}
-					//방 세부 정보별로 자른것
+					// 방 세부 정보별로 자른것
 					String roomInfo[];
-					programGUI.pnlClear();//새로고침(1)
+					programGUI.pnlClear();// 새로고침(1)
 					for (int i = 0; i < allRoom.length; i++) {
 						String userCount = "";
-						programGUI.addRoom[i].init();//생성되어있는 방 새로고침(2)
+						programGUI.addRoom[i].init();// 생성되어있는 방 새로고침(2)
 						roomInfo = allRoom[i].split("@");
-						//비밀방 - 0: 방번호, 1: 방제목, 2: 방비번, 3: 인원수, 4: 방장, 5: 비밀방/공개방, 6: 참가인원
-						//공개방 - 0: 방번호, 1: 방제목, 2: 인원수, 3: 방장, 4: 비밀방/공개방, 5: 참가인원
-						
+						// 비밀방 - 0: 방번호, 1: 방제목, 2: 방비번, 3: 인원수, 4: 방장, 5: 비밀방/공개방, 6: 참가인원
+						// 공개방 - 0: 방번호, 1: 방제목, 2: 인원수, 3: 방장, 4: 비밀방/공개방, 5: 참가인원
+
 						if (roomInfo.length == 7) {
-							userCount += (roomInfo[6] + "/" + roomInfo[3]);//참가자 인원수
-							programGUI.addRoom[i].labelArr[0].setText(roomInfo[0]);//방 번호
-							programGUI.addRoom[i].labelArr[3].setText(roomInfo[1]);//방 제목
+							userCount += (roomInfo[6] + "/" + roomInfo[3]);// 참가자 인원수
+							programGUI.addRoom[i].labelArr[0].setText(roomInfo[0]);// 방 번호
+							programGUI.addRoom[i].labelArr[3].setText(roomInfo[1]);// 방 제목
 							programGUI.addRoom[i].labelArr[3].setFont(new Font("맑은 고딕", Font.BOLD, 18));
-							programGUI.addRoom[i].labelArr[5].setText("\t" + userCount);//방 인원
-							programGUI.addRoom[i].labelArr[6].setText("방장: " + roomInfo[4]);//방장
+							programGUI.addRoom[i].labelArr[5].setText("\t" + userCount);// 방 인원
+							programGUI.addRoom[i].labelArr[6].setText("방장: " + roomInfo[4]);// 방장
 						} else if (roomInfo.length == 6) {
-							userCount += (roomInfo[5] + "/" + roomInfo[2]);//참가자 인원수
-							programGUI.addRoom[i].labelArr[0].setText(roomInfo[0]);//방 번호
-							programGUI.addRoom[i].labelArr[3].setText(roomInfo[1]);//방 제목
-							programGUI.addRoom[i].labelArr[5].setText(userCount);//방 인원
-							programGUI.addRoom[i].labelArr[6].setText("방장: " + roomInfo[3]);//방장
+							userCount += (roomInfo[5] + "/" + roomInfo[2]);// 참가자 인원수
+							programGUI.addRoom[i].labelArr[0].setText(roomInfo[0]);// 방 번호
+							programGUI.addRoom[i].labelArr[3].setText(roomInfo[1]);// 방 제목
+							programGUI.addRoom[i].labelArr[5].setText(userCount);// 방 인원
+							programGUI.addRoom[i].labelArr[6].setText("방장: " + roomInfo[3]);// 방장
 						}
 					}
+					programGUI.pnl_Chat.revalidate();
+					programGUI.pnl_Chat.repaint();
 					makeRoom.setVisible(false);
 				} else if (line[0].compareTo(Protocol.MAKEROOM_ADMIN_OK) == 0) {// 방을 만든 방장
 					makeRoom.setVisible(false);
-					
+//					programGUI.setVisible(false);
+					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
+					programGUI.pnl_Parent.removeAll();
+					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
+					programGUI.pnl_Parent.repaint();
+					programGUI.pnl_Parent.revalidate();
 				} else if (line[0].compareTo(Protocol.ENTER_User) == 0) {
-					//대화방으로 화면 전환
+					// 대화방으로 화면 전환
+//					programGUI.setVisible(false);
+					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
+					programGUI.pnl_Parent.removeAll();
+					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
+					programGUI.pnl_Parent.repaint();
+					programGUI.pnl_Parent.revalidate();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

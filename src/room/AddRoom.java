@@ -45,12 +45,13 @@ public class AddRoom extends JPanel implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this) {
+		if (e.getSource() == this.btnRoom) {
 			String userCount[] = labelArr[5].getText().split("/");
 
 			if (userCount[0].compareTo(userCount[1]) == 0) {
 				JOptionPane.showMessageDialog(null, "인원수 초과");
 			} else {
+				System.out.println("테스트테스트");
 				String line = "";
 				line += (Protocol.ENTER + ">" + labelArr[0].getText());
 				pWriter.println(line);

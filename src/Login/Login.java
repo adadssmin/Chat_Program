@@ -36,7 +36,6 @@ public class Login extends JFrame {
 		txtField_Ip = new JTextField();
 		txtField_Ip.setBackground(new Color(173, 216, 230));
 		txtField_Ip.setHorizontalAlignment(SwingConstants.CENTER);
-		txtField_Ip.setText("ip");
 		txtField_Ip.setBounds(80, 196, 202, 24);
 		getContentPane().add(txtField_Ip);
 		txtField_Ip.setColumns(10);
@@ -44,7 +43,6 @@ public class Login extends JFrame {
 		txtField_Port = new JTextField();
 		txtField_Port.setBackground(new Color(173, 216, 230));
 		txtField_Port.setHorizontalAlignment(SwingConstants.CENTER);
-		txtField_Port.setText("port");
 		txtField_Port.setColumns(10);
 		txtField_Port.setBounds(294, 196, 115, 24);
 		getContentPane().add(txtField_Port);

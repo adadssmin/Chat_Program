@@ -11,4 +11,5 @@ public class Protocol {
 	public static final String MAKEROOM_ADMIN_OK = "202";//방 만든 유저 성공
 	public static final String ENTER = "300";//방 입장
 	public static final String ENTER_User = "301";//방 입장
+	public static final String EXITROOM = "310";//대화방 퇴장
 }

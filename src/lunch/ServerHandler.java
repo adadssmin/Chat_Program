@@ -23,7 +23,7 @@ public class ServerHandler extends Thread {
 	private Connection conn;
 	private PreparedStatement pstmt;
 	private ResultSet rs;
-	private Room UserRoom; // 사용자가 있는 방
+	private Room thisRoom; // 사용자가 있는 방
 	private BufferedReader bReader;
 	private PrintWriter pWriter;
 
@@ -36,7 +36,7 @@ public class ServerHandler extends Thread {
 	public ServerHandler(Socket socket, ArrayList<ServerHandler> allUserList, ArrayList<ServerHandler> standbyUserList,
 			ArrayList<Room> totalRoomList, Connection conn) {
 		this.user = new UserData();
-		this.UserRoom = new Room();
+		this.thisRoom = new Room();
 		this.socket = socket;
 		this.allUserList = allUserList;
 		this.standbyUserList = standbyUserList;
@@ -135,15 +135,15 @@ public class ServerHandler extends Thread {
 								userListLine += ("(" + standbyUserList.get(i).user.getId() + ") ");
 							}
 							System.out.println("[접속 중인 사용자]" + userListLine);
-							
+
 							if (totalRoomList.size() != 0) {
 								System.out.println("[방 정보]");
 								for (Room room : totalRoomList) {
-									System.out.println(room.toString() + "현재방 인원수: " + room.roomInUserList.size());
+									System.out.println(room.toString() + "현재방 인원수: " + room.userListInRoom.size());
 								}
 							}
-							
-							System.out.println("[전체 방 갯수]" + totalRoomList.size());
+
+							System.out.println("[전체 방 갯수] " + totalRoomList.size());
 							String roomListMessage = "";
 
 							for (int i = 0; i < totalRoomList.size(); i++) {
@@ -153,10 +153,10 @@ public class ServerHandler extends Thread {
 										+ totalRoomList.get(i).getUser_Count() + "@" 
 										+ totalRoomList.get(i).getAdmin() + "@" 
 										+ totalRoomList.get(i).getPriv() + "@"
-										+ totalRoomList.get(i).roomInUserList.size() + "-");
+										+ totalRoomList.get(i).userListInRoom.size() + "-");
 							}
 
-							System.out.println(roomListMessage);
+//							System.out.println(roomListMessage);
 
 							if (roomListMessage.length() != 0) {
 								for (int i = 0; i < standbyUserList.size(); i++) {
@@ -165,6 +165,7 @@ public class ServerHandler extends Thread {
 									standbyUserList.get(i).pWriter.flush();
 								}
 							}
+							System.out.println(roomListMessage);
 						}
 //						System.out.println(user.toString());
 					} else {
@@ -176,13 +177,13 @@ public class ServerHandler extends Thread {
 					logoutId = thisId;
 					standbyUserList.remove(this);
 					System.out.println("[접속 인원수] " + standbyUserList.size());
-					
+
 					String userListLine = "";
 					for (int i = 0; i < standbyUserList.size(); i++) {
 						userListLine += ("(" + standbyUserList.get(i).user.getId() + ") ");
 					}
 					System.out.println("[접속 중인 사용자]" + userListLine);
-					
+
 					user.setId("");
 					user.setPassword("");
 				} else if (line[0].compareTo(Protocol.MAKEROOM) == 0) {// 방만들기
@@ -236,7 +237,7 @@ public class ServerHandler extends Thread {
 
 					// 만들어진 방 확인 -------------------------------------------------------
 					pstmt = conn.prepareStatement(qurey);
-					ResultSet rs = pstmt.executeQuery();
+					ResultSet rs = pstmt.executeQuery(qurey);
 					int priNumber = 0;// 방 고유번호 설정
 					int count = 0;
 					while (rs.next()) {// 방 정보가 있다면?
@@ -245,15 +246,15 @@ public class ServerHandler extends Thread {
 					}
 					if (count != 0) {
 						roomTemp.setRoom_Num(priNumber);// 방 고유번호 설
-						roomTemp.roomInUserList.add(this);// 방에 있는 사용자 리스트에 추가
+						roomTemp.userListInRoom.add(this);// 방에 있는 사용자 리스트에 추가
 						totalRoomList.add(roomTemp);// 방 리스트에 만들어진 방 추가
-						UserRoom = roomTemp;// 현재 방으로 지정
+						thisRoom = roomTemp;// 현재 방으로 지정
 					}
 
 					if (totalRoomList.size() != 0) {
 						System.out.println("[방 정보]");
 						for (Room room : totalRoomList) {
-							System.out.println(room.toString() + ", 현재방에 인원수: " + room.roomInUserList.size());
+							System.out.println(room.toString() + ", 현재방에 인원수: " + room.userListInRoom.size());
 						}
 					}
 					System.out.println("[전체 방 갯수] " + totalRoomList.size());
@@ -267,17 +268,16 @@ public class ServerHandler extends Thread {
 								+ totalRoomList.get(i).getUser_Count() + "@" 
 								+ totalRoomList.get(i).getAdmin() + "@"
 								+ totalRoomList.get(i).getPriv() + "@" 
-								+ totalRoomList.get(i).getRoomInUserList().size()
+								+ totalRoomList.get(i).userListInRoom.size()
 								+ "-");
 					}
+//					System.out.println(roomListLine);
 
-					System.out.println(roomListLine);
-					
 					for (int i = 0; i < standbyUserList.size(); i++) {
+						System.out.println(standbyUserList.get(i).user.getId().compareTo(roomTemp.getAdmin()));
 						if (standbyUserList.get(i).user.getId().compareTo(roomTemp.getAdmin()) == 0) {
 							// 사용자가 방만들면 바로 채팅방들어가도록
-							standbyUserList.get(i).pWriter
-									.println(Protocol.MAKEROOM_ADMIN_OK + ">" + roomTemp.getAdmin());
+							standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_ADMIN_OK + ">" + roomTemp.getAdmin());
 							standbyUserList.get(i).pWriter.flush();
 						} else {
 							// 다른사용자들이 만들어진 방을 볼 수 있도록
@@ -285,39 +285,142 @@ public class ServerHandler extends Thread {
 							standbyUserList.get(i).pWriter.flush();
 						}
 					}
-					// 방을 만든 사용자 채팅방으로 들어가므로 대기서버에서 제거
-//					standbyUserList.remove(this);
-					System.out.println("[새로운 방 생성]-[방갯수] " + standbyUserList.size());
+					System.out.println(roomListLine);
+					standbyUserList.remove(this);
+					System.out.println("[새로운 방 생성 후 대기자] " + standbyUserList.size());
 
 					String userLine = "";
 					for (int i = 0; i < standbyUserList.size(); i++) {
 						userLine += (standbyUserList.get(i).user.getId() + ":");
 					}
+//					for (int i = 0; i < standbyUserList.size(); i++) {
+//						// 프로그램을 다시한번 새로고침해주는 역할
+//						standbyUserList.get(i).pWriter.println(Protocol.LOGIN_OK + ">" + roomTemp.getAdmin() + ">님이 "
+//								+ roomTemp.getRoom_Num() + "번방을 생성하셨습니다.>");
+//						standbyUserList.get(i).pWriter.flush();
+//					}
+					System.out.println(roomTemp.getAdmin() + "님이 " + roomTemp.getRoom_Num() + "번방을 생성하셨습니다.");
+
+//					// 폴더를 만들어 방을 관리하기 위함
+//					String folderPath = ".\\0409 Chatpro\\roomForder\\" + priNumber;
+//					File folder = new File(folderPath);
+//					if (folder.isDirectory()) {
+//						try {
+//							System.out.println("[폴더 존재]");
+//						} catch (Exception e) {
+//							e.printStackTrace();
+//						}
+//					} else if (!folder.isDirectory()) {
+//						folder.mkdir();
+//						System.out.println("[폴더 생성]");
+//					}
+				} else if (line[0].compareTo(Protocol.ENTER) == 0) {// 방입장
+					String thisUser = standbyUserList.get(standbyUserList.indexOf(this)).user.getId();
+					//AddRoom에서 온 내용
+					int room_num = Integer.valueOf(line[1]);//방 고유번호
+					int index = 0;
+					for (int i = 0; i < totalRoomList.size(); i++) {
+						if (totalRoomList.get(i).getRoom_Num() == room_num) {
+							totalRoomList.get(i).userListInRoom.add(this); // 지금 방에 유저추가
+							thisRoom = totalRoomList.get(i); //들어온 방을 현재 방으로 설정
+							index = i;//현재 번호 기억
+						}
+					}
+					
+					String roomListLine = "";
+					for (int i = 0; i < roomListLine.length(); i++) {
+						roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+								+ totalRoomList.get(i).getTitle() + "@" 
+								+ totalRoomList.get(i).getRoom_Password() + "@"
+								+ totalRoomList.get(i).getUser_Count() + "@" 
+								+ totalRoomList.get(i).getAdmin() + "@"
+								+ totalRoomList.get(i).getPriv() + "@" 
+								+ totalRoomList.get(i).getUserListInRoom().size()
+								+ "-");
+					}
+					System.out.println(roomListLine); 
+					System.out.println(thisUser);
+					System.out.println(room_num);
+					
+					String userInRoom = ""; //모든 방을 검색하여 지금의 사용자가 들어있는지 확하기 위해
+					for (int i = 0; i < totalRoomList.get(index).userListInRoom.size(); i++) {
+						userInRoom += (totalRoomList.get(index).userListInRoom.get(i).user.getId() + "@");
+					}
 					for (int i = 0; i < standbyUserList.size(); i++) {
-						// 프로그램을 다시한번 새로고침해주는 역할
-						standbyUserList.get(i).pWriter.println(Protocol.LOGIN_OK + ">" + roomTemp.getAdmin() + ">님이 "
-								+ roomTemp.getRoom_Num() + "번방을 생성하셨습니다.>");
-						standbyUserList.get(i).pWriter.flush();
+						if (standbyUserList.get(i).user.getId().compareTo(thisUser) == 0) {
+							//방에 입장하는 사용자용
+							standbyUserList.get(i).pWriter.println(Protocol.ENTER_User + ">" + "message");
+							standbyUserList.get(i).pWriter.flush();
+						} else { 
+							//대화방 인원수 변경을 위한 대화방 채널 새로고침
+							standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
+							standbyUserList.get(i).pWriter.flush();
+						}
 					}
 
-					// 폴더를 만들어 방을 관리하기 위함
-					String folderPath = ".\\0409 Chatpro\\roomForder\\" + priNumber;
-					File folder = new File(folderPath);
-					if (folder.isDirectory()) {
-						try {
-							System.out.println("[폴더 존재]");
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					} else if (!folder.isDirectory()) {
-						folder.mkdir();
-						System.out.println("[폴더 생성]");
-					}
-				} else if (line[0].compareTo(Protocol.ENTER) == 0) {// 방입장
+					//유저 입장 부분 넣기
 					
+					standbyUserList.remove(this);
+					System.out.println("[대기중인 사용자수] " + standbyUserList.size());
+				} else if (line[0].compareTo(Protocol.EXITROOM) == 0) {
+					int index = 0;
+					boolean isUserIn = true;//사용자가 남아있는지 확인
+					String query = "DELETE FROM room WHERE room_num = " + thisRoom + ";";
+					for (int i = 0; i < totalRoomList.size(); i++) {
+						if (totalRoomList.get(i).getRoom_Num() == thisRoom.getRoom_Num()) {
+							if (totalRoomList.get(i).userListInRoom.size() == 1) {
+								//마지막 사람이 퇴장할 때
+								System.out.println("[마지막 사람 대화방 퇴장]");
+								totalRoomList.remove(thisRoom);
+								thisRoom = new Room();//현재방을 나타내는 장치 초기화
+								isUserIn = false;
+								pstmt = conn.prepareStatement(query);
+								pstmt.executeUpdate();
+							} else {
+								System.out.println("[대화방 퇴장]");
+								totalRoomList.get(i).userListInRoom.remove(this);
+								thisRoom = new Room();
+								index = i;//현재방 기억
+							}
+						}
+					}
+					
+					if (isUserIn) {
+						String userInRoom = ""; //모든 방을 검색하여 지금의 사용자가 들어있는지 확하기 위해
+						for (int i = 0; i < totalRoomList.get(index).userListInRoom.size(); i++) {
+							userInRoom += (totalRoomList.get(index).userListInRoom.get(i).user.getId() + "@");
+						}
+						
+						System.out.println("[방 사용자 수] " + totalRoomList.get(index).userListInRoom.size());
+						System.out.println(userInRoom);
+					}
+					
+					standbyUserList.add(this);
+					String roomListLine = "";
+					if (totalRoomList.size() > 0) {
+						roomListLine = "";
+						for (int i = 0; i < roomListLine.length(); i++) {
+							roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+									+ totalRoomList.get(i).getTitle() + "@" 
+									+ totalRoomList.get(i).getRoom_Password() + "@"
+									+ totalRoomList.get(i).getUser_Count() + "@" 
+									+ totalRoomList.get(i).getAdmin() + "@"
+									+ totalRoomList.get(i).getPriv() + "@" 
+									+ totalRoomList.get(i).userListInRoom.size()
+									+ "-");
+						}
+					} else {
+						roomListLine = "-";
+					}
+					
+					for (int i = 0; i < standbyUserList.size(); i++) {
+						standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
+						standbyUserList.get(i).pWriter.flush();
+					}
+					System.out.println("[대기중인 사용자수] " + standbyUserList.size());
 				}
 			}
- 			bReader.close();
+			bReader.close();
 			pWriter.close();
 			socket.close();
 		} catch (SocketException se) {
