@@ -1,5 +1,6 @@
 package lunch;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -14,13 +15,17 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+
+import com.mysql.cj.Constants;
 
 import GUI.ProgramGUI;
 import Login.Join;
 import Login.Login;
 import data.Room;
+import room.AddRoom;
 import room.MakeRoom;
 
 public class MainAction extends JFrame implements ActionListener, Runnable {
@@ -40,7 +45,7 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 		// 일단 각 프레임들을 모두 실행 시키고 버튼이 반응할 때 보이기
 		login = new Login();
 		join = new Join();
-		programGUI = new ProgramGUI(pWriter);
+		programGUI = new ProgramGUI(bReader, pWriter);
 		makeRoom = new MakeRoom();
 
 		groupOfListener();// 리스너 실행
@@ -109,7 +114,7 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 				String line = id + "@" + password;
 				pWriter.println(Protocol.LOGIN + ">" + line);
 				pWriter.flush();
-				login.dispose();
+				login.setVisible(false);
 			}
 			login.textField_Id.setText("");
 			login.pwField_Pw.setText("");
@@ -206,7 +211,8 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 							userCount += (roomInfo[6] + "/" + roomInfo[3]);//참가자 인원수
 							programGUI.addRoom[i].labelArr[0].setText(roomInfo[0]);//방 번호
 							programGUI.addRoom[i].labelArr[3].setText(roomInfo[1]);//방 제목
-							programGUI.addRoom[i].labelArr[5].setText(userCount);//방 인원
+							programGUI.addRoom[i].labelArr[3].setFont(new Font("맑은 고딕", Font.BOLD, 18));
+							programGUI.addRoom[i].labelArr[5].setText("\t" + userCount);//방 인원
 							programGUI.addRoom[i].labelArr[6].setText("방장: " + roomInfo[4]);//방장
 						} else if (roomInfo.length == 6) {
 							userCount += (roomInfo[5] + "/" + roomInfo[2]);//참가자 인원수

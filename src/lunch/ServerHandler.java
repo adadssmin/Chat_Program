@@ -150,12 +150,13 @@ public class ServerHandler extends Thread {
 								roomListMessage += (totalRoomList.get(i).getRoom_Num() + "@"
 										+ totalRoomList.get(i).getTitle() + "@"
 										+ totalRoomList.get(i).getRoom_Password() + "@"
-										+ totalRoomList.get(i).getUser_Count() + "@" + totalRoomList.get(i).getAdmin()
-										+ "@" + totalRoomList.get(i).getPriv() + "@"
+										+ totalRoomList.get(i).getUser_Count() + "@" 
+										+ totalRoomList.get(i).getAdmin() + "@" 
+										+ totalRoomList.get(i).getPriv() + "@"
 										+ totalRoomList.get(i).roomInUserList.size() + "-");
 							}
 
-//							System.out.println(roomListMessage);
+							System.out.println(roomListMessage);
 
 							if (roomListMessage.length() != 0) {
 								for (int i = 0; i < standbyUserList.size(); i++) {
@@ -270,7 +271,7 @@ public class ServerHandler extends Thread {
 								+ "-");
 					}
 
-//					System.out.println(roomListLine);
+					System.out.println(roomListLine);
 					
 					for (int i = 0; i < standbyUserList.size(); i++) {
 						if (standbyUserList.get(i).user.getId().compareTo(roomTemp.getAdmin()) == 0) {
