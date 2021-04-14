@@ -92,11 +92,11 @@ public class ServerHandler extends Thread {
 //					System.out.println(isLogin);
 
 					if (isLogin) {
-						String query = "SELECT * FROM user WHERE id = '" + userContent[0] + "' AND password = '"
+						String queryU = "SELECT * FROM user WHERE id = '" + userContent[0] + "' AND password = '"
 								+ userContent[1] + "';";
 						int count = 0;
 						try {
-							pstmt = conn.prepareStatement(query);
+							pstmt = conn.prepareStatement(queryU);
 							rs = pstmt.executeQuery();
 							while (rs.next()) {
 								user.setId(rs.getString("id"));
@@ -116,6 +116,7 @@ public class ServerHandler extends Thread {
 							user.setId("");
 							user.setPassword("");
 						} else {// 로그인 성공
+							pWriter.println(Protocol.LOGIN_OK + ">" + this.user.getId());
 							standbyUserList.add(this);// 대기중인 인원 추가
 							String userLine = "";
 							// 접속했을 때 접속해 있는 사람 보이기위해 userLine을 만듬
@@ -142,7 +143,24 @@ public class ServerHandler extends Thread {
 									System.out.println(room.toString() + "현재방 인원수: " + room.userListInRoom.size());
 								}
 							}
-
+							
+							//db에 있는 방 보기
+							totalRoomList.clear();
+							String qureyR = "SELECT * FROM room;";
+							pstmt = conn.prepareStatement(qureyR);
+							rs = pstmt.executeQuery();
+							while (rs.next()) {
+								int room_num = rs.getInt("room_num");
+								String room_title = rs.getString("room_title");
+								String room_password = rs.getString("room_password");
+								String usercount = rs.getString("usercount");
+								String admin = rs.getString("admin");
+								int private_room = rs.getInt("private_room");
+								totalRoomList.add(new Room(room_num, room_title, room_password, 
+										usercount, admin, private_room));
+							}
+							
+							
 							System.out.println("[전체 방 갯수] " + totalRoomList.size());
 							String roomListMessage = "";
 
@@ -160,6 +178,7 @@ public class ServerHandler extends Thread {
 
 							if (roomListMessage.length() != 0) {
 								for (int i = 0; i < standbyUserList.size(); i++) {
+									System.out.println("로그인 했을 때 totoalRoomList의 수 " + totalRoomList.size());
 									standbyUserList.get(i).pWriter
 											.println(Protocol.MAKEROOM_OK + ">" + roomListMessage);
 									standbyUserList.get(i).pWriter.flush();
@@ -277,16 +296,18 @@ public class ServerHandler extends Thread {
 						System.out.println(standbyUserList.get(i).user.getId().compareTo(roomTemp.getAdmin()));
 						if (standbyUserList.get(i).user.getId().compareTo(roomTemp.getAdmin()) == 0) {
 							// 사용자가 방만들면 바로 채팅방들어가도록
+							System.out.println("방 만들 때 totoalRoomList의 수 " + totalRoomList.size());
 							standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_ADMIN_OK + ">" + roomTemp.getAdmin());
 							standbyUserList.get(i).pWriter.flush();
 						} else {
 							// 다른사용자들이 만들어진 방을 볼 수 있도록
+							System.out.println("방 만들 때 totoalRoomList의 수 " + totalRoomList.size());
 							standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
 							standbyUserList.get(i).pWriter.flush();
 						}
 					}
-					System.out.println(roomListLine);
 					standbyUserList.remove(this);
+					System.out.println(roomListLine);
 					System.out.println("[새로운 방 생성 후 대기자] " + standbyUserList.size());
 
 					String userLine = "";
@@ -353,28 +374,30 @@ public class ServerHandler extends Thread {
 							standbyUserList.get(i).pWriter.flush();
 						} else { 
 							//대화방 인원수 변경을 위한 대화방 채널 새로고침
+							System.out.println("방에 입장할 때 totoalRoomList의 수 " + totalRoomList.size());
 							standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
 							standbyUserList.get(i).pWriter.flush();
 						}
 					}
+					standbyUserList.remove(this);
 
 					//유저 입장 부분 넣기
 					
-					standbyUserList.remove(this);
 					System.out.println("[대기중인 사용자수] " + standbyUserList.size());
 				} else if (line[0].compareTo(Protocol.EXITROOM) == 0) {
 					int index = 0;
 					boolean isUserIn = true;//사용자가 남아있는지 확인
-					String query = "DELETE FROM room WHERE room_num = " + thisRoom + ";";
+					standbyUserList.add(this);
 					for (int i = 0; i < totalRoomList.size(); i++) {
 						if (totalRoomList.get(i).getRoom_Num() == thisRoom.getRoom_Num()) {
 							if (totalRoomList.get(i).userListInRoom.size() == 1) {
+								String queryD = "DELETE FROM room WHERE room_num = '" + thisRoom.getRoom_Num() + "';";
 								//마지막 사람이 퇴장할 때
 								System.out.println("[마지막 사람 대화방 퇴장]");
 								totalRoomList.remove(thisRoom);
 								thisRoom = new Room();//현재방을 나타내는 장치 초기화
 								isUserIn = false;
-								pstmt = conn.prepareStatement(query);
+								pstmt = conn.prepareStatement(queryD);
 								pstmt.executeUpdate();
 							} else {
 								System.out.println("[대화방 퇴장]");
@@ -395,7 +418,6 @@ public class ServerHandler extends Thread {
 						System.out.println(userInRoom);
 					}
 					
-					standbyUserList.add(this);
 					String roomListLine = "";
 					if (totalRoomList.size() > 0) {
 						roomListLine = "";
@@ -412,11 +434,11 @@ public class ServerHandler extends Thread {
 					} else {
 						roomListLine = "-";
 					}
-					
-					for (int i = 0; i < standbyUserList.size(); i++) {
-						standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
-						standbyUserList.get(i).pWriter.flush();
-					}
+					System.out.println("퇴장 후 totoalRoomList의 수 " + totalRoomList.size());
+//					for (int i = 0; i < standbyUserList.size(); i++) {
+//						standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
+//						standbyUserList.get(i).pWriter.flush();
+//					}
 					System.out.println("[대기중인 사용자수] " + standbyUserList.size());
 				}
 			}

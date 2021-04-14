@@ -41,6 +41,8 @@ public class AddRoom extends JPanel implements ActionListener{
 			btnRoom.add(labelArr[i]);
 		}
 		add(btnRoom);
+		revalidate();
+		repaint();
 	}
 	
 	@Override
@@ -51,7 +53,6 @@ public class AddRoom extends JPanel implements ActionListener{
 			if (userCount[0].compareTo(userCount[1]) == 0) {
 				JOptionPane.showMessageDialog(null, "인원수 초과");
 			} else {
-				System.out.println("테스트테스트");
 				String line = "";
 				line += (Protocol.ENTER + ">" + labelArr[0].getText());
 				pWriter.println(line);

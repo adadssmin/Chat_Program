@@ -38,8 +38,8 @@ public class ProgramGUI extends JFrame implements ActionListener {
 			btn_Search, btn_addChat, btn_Setting, btn_ModifyId, btn_ModifyEmail, btn_ChgPw, btn_ChgPic, btn_Chanel,
 			btn_ChatRoom;
 	public JScrollPane scrollRoomList;
+	public JLabel lbl_ChatList, lbl_getId;
 	private JTextField txtField_chat;
-	private JLabel lbl_ChatList;
 	private ImageIcon changeIcon_Search, icon_addChat, changeIcon_addChat, icon_Search;
 	private Image img_Search, changeImg_Search, img_addChat, changeImg_addChat;
 
@@ -99,6 +99,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		pnl_ChatRoom.setBackground(new Color(245, 245, 245));
 		pnl_ChatRoom.setBounds(0, 0, 1002, 719);
 		pnl_ChatRoom.setLayout(null);
+		pnl_ChatRoom.setVisible(false);
 		ChatRoomGUI();
 
 		pnl_Parent.add(pnl_Chanel); // 첫 실행시 초기화면
@@ -127,7 +128,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		lbl_Id.setBounds(39, 36, 126, 37);
 		pnl_North.add(lbl_Id);
 
-		JLabel lbl_getId = new JLabel("겟아이디()");
+		lbl_getId = new JLabel("겟아이디()");
 		lbl_getId.setFont(new Font("굴림", Font.PLAIN, 20));
 		lbl_getId.setBounds(161, 36, 226, 37);
 		pnl_North.add(lbl_getId);
@@ -261,16 +262,16 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		btn_addChat.addActionListener(this);
 		
 		//생성되어있는 대화방 불러오기
-		addRoom = new AddRoom[15];
-		pnl_Chat = new JPanel(); // 100개
+		addRoom = new AddRoom[50];
+		pnl_Chat = new JPanel(); // 50개
 		pnl_Chat.setBackground(new Color(245, 245, 245));
-		pnl_Chat.setLayout(new GridLayout(15, 1));
-		for (int i = 1; i < 15; i++) {
+		pnl_Chat.setLayout(new GridLayout(50, 1));
+		for (int i = 1; i < 50; i++) {
 			addRoom[i] = new AddRoom(bReader, pWriter);
 			addRoom[i].setBackground(new Color(245, 245, 245));
 			pnl_Chat.add(addRoom[i]);
-			pnl_Chat.revalidate();
-			pnl_Chat.repaint();
+			addRoom[i].revalidate();
+			addRoom[i].repaint();
 		}
 		scrollRoomList = new JScrollPane(pnl_Chat);
 		scrollRoomList.setBackground(new Color(245, 245, 245));
@@ -331,7 +332,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 
 		btn_ChatRoom = new JButton(changeIcon2);
 		btn_ChatRoom.setBounds(23, 300, 97, 87);
-		pnl_Menu.add(btn_ChatRoom);
+//		pnl_Menu.add(btn_ChatRoom);
 		btn_ChatRoom.setBorderPainted(false);
 		btn_ChatRoom.setContentAreaFilled(false);
 //				btn_ChatList.setFocusPainted(false);
@@ -459,19 +460,20 @@ public class ProgramGUI extends JFrame implements ActionListener {
 			pnl_Parent.add(pnl_Friend);
 			pnl_Parent.repaint();
 			pnl_Parent.revalidate();
-		} else if (ob == btn_Chanel) {
-			pnl_Parent.add(pnl_Chanel);
-			pnl_Parent.removeAll();
-			pnl_Parent.add(pnl_Chanel);
-			pnl_Parent.repaint();
-			pnl_Parent.revalidate();
-		} else if (ob == btn_ChatRoom) {
-			pnl_Parent.add(pnl_ChatRoom);
-			pnl_Parent.removeAll();
-			pnl_Parent.add(pnl_ChatRoom);
-			pnl_Parent.repaint();
-			pnl_Parent.revalidate();
-		}
+		} 
+//		else if (ob == btn_Chanel) {
+//			pnl_Parent.add(pnl_Chanel);
+//			pnl_Parent.removeAll();
+//			pnl_Parent.add(pnl_Chanel);
+//			pnl_Parent.repaint();
+//			pnl_Parent.revalidate();
+//		} else if (ob == btn_ChatRoom) {
+//			pnl_Parent.add(pnl_ChatRoom);
+//			pnl_Parent.removeAll();
+//			pnl_Parent.add(pnl_ChatRoom);
+//			pnl_Parent.repaint();
+//			pnl_Parent.revalidate();
+//		}
 
 //		// 채팅방 생성버튼 클릭시
 //		if (ob == btn_addChat) {
@@ -483,7 +485,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 
 	public void pnlClear() {
 		pnl_Chat.removeAll();
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 50; i++) {
 			addRoom[i] = new AddRoom(bReader, pWriter);
 			addRoom[i].setBackground(new Color(245, 245, 245));
 			pnl_Chat.add(addRoom[i]);

@@ -74,6 +74,7 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 		login.btn_Login.addActionListener(this);// 로그인 버튼
 		login.btn_Join.addActionListener(this);// 회원가입 버튼
 		programGUI.btn_addChat.addActionListener(this);
+		programGUI.btn_Chanel.addActionListener(this);
 		makeRoom.btn_done.addActionListener(this);
 		makeRoom.chckbxNewCheckBox.addActionListener(this);
 		makeRoom.btn_Cancle.addActionListener(this);
@@ -89,6 +90,18 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 		programGUI.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+				if (programGUI.pnl_ChatRoom.isVisible()) {
+					int result = JOptionPane.showConfirmDialog(null, "퇴장하시겠습니까?", "퇴장", JOptionPane.OK_CANCEL_OPTION);
+					if (result == JOptionPane.YES_OPTION) {
+						pWriter.println(Protocol.EXITROOM + ">");
+						pWriter.flush();
+						programGUI.pnl_Parent.add(programGUI.pnl_Chanel);
+						programGUI.pnl_Parent.removeAll();
+						programGUI.pnl_Parent.add(programGUI.pnl_Chanel);
+						programGUI.pnl_Parent.repaint();
+						programGUI.pnl_Parent.revalidate();
+					}
+				}
 				programGUI.setVisible(false);
 				login.setVisible(true);
 				pWriter.println(Protocol.LOGOUT + ">" + "message");
@@ -177,6 +190,25 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 			makeRoom.passwordField_RoomPw.setText("");
 			makeRoom.cb_Persons.setSelectedIndex(0);
 			makeRoom.chckbxNewCheckBox.setSelected(false);
+		} else if (e.getSource() == programGUI.btn_Chanel) {
+			if (programGUI.pnl_ChatRoom.isVisible()) {
+				int result = JOptionPane.showConfirmDialog(this, "퇴장하시겠습니까?", "퇴장", JOptionPane.OK_CANCEL_OPTION);
+				if (result == JOptionPane.YES_OPTION) {
+					pWriter.println(Protocol.EXITROOM + ">");
+					pWriter.flush();
+					programGUI.pnl_Parent.add(programGUI.pnl_Chanel);
+					programGUI.pnl_Parent.removeAll();
+					programGUI.pnl_Parent.add(programGUI.pnl_Chanel);
+					programGUI.pnl_Parent.repaint();
+					programGUI.pnl_Parent.revalidate();
+				}
+			} else if (programGUI.pnl_Chanel.isVisible()) {
+				programGUI.pnl_Parent.add(programGUI.pnl_Chanel);
+				programGUI.pnl_Parent.removeAll();
+				programGUI.pnl_Parent.add(programGUI.pnl_Chanel);
+				programGUI.pnl_Parent.repaint();
+				programGUI.pnl_Parent.revalidate();
+			} 
 		}
 	}
 
@@ -197,6 +229,8 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 				} else if (line[0].compareTo(Protocol.LOGIN_OK) == 0) {// 로그인 성공
 					login.setVisible(false);
 					programGUI.setVisible(true);
+					String id = line[1];// 존재하는 방을 모두 보여줌
+					programGUI.lbl_getId.setText(id);
 				} else if (line[0].compareTo(Protocol.LOGOUT) == 0) {// 로그아웃
 					programGUI.setVisible(false);
 					login.setVisible(true);
@@ -232,13 +266,13 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 							programGUI.addRoom[i].labelArr[5].setText(userCount);// 방 인원
 							programGUI.addRoom[i].labelArr[6].setText("방장: " + roomInfo[3]);// 방장
 						}
+						programGUI.addRoom[i].revalidate();
+						programGUI.addRoom[i].repaint();
 					}
-					programGUI.pnl_Chat.revalidate();
-					programGUI.pnl_Chat.repaint();
 					makeRoom.setVisible(false);
 				} else if (line[0].compareTo(Protocol.MAKEROOM_ADMIN_OK) == 0) {// 방을 만든 방장
 					makeRoom.setVisible(false);
-//					programGUI.setVisible(false);
+					programGUI.pnl_ChatRoom.setVisible(true);
 					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
 					programGUI.pnl_Parent.removeAll();
 					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
@@ -246,12 +280,14 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 					programGUI.pnl_Parent.revalidate();
 				} else if (line[0].compareTo(Protocol.ENTER_User) == 0) {
 					// 대화방으로 화면 전환
-//					programGUI.setVisible(false);
+					programGUI.pnl_ChatRoom.setVisible(true);
 					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
 					programGUI.pnl_Parent.removeAll();
 					programGUI.pnl_Parent.add(programGUI.pnl_ChatRoom);
 					programGUI.pnl_Parent.repaint();
 					programGUI.pnl_Parent.revalidate();
+				} else if (line[0].compareTo(Protocol.EXITROOM) == 0) {
+					programGUI.pnl_ChatRoom.setVisible(false);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -23,8 +23,7 @@ public class Room {
 		userListInRoom = new ArrayList<>();
 	}
 	
-	public Room(int room_Num, String title, String room_Password, String user_Count, String admin, int condtionP,
-			ArrayList<ServerHandler> userListInRoom) {
+	public Room(int room_Num, String title, String room_Password, String user_Count, String admin, int condtionP) {
 		super();
 		this.room_Num = room_Num;
 		this.title = title;
@@ -32,18 +31,17 @@ public class Room {
 		this.user_Count = user_Count;
 		this.admin = admin;
 		this.priv = condtionP;
-		this.userListInRoom = userListInRoom;
+		this.userListInRoom = new ArrayList<>();
 	}
 	
-	public Room(String title, String room_Password, String user_Count, String admin, int priv,
-			ArrayList<ServerHandler> userListInRoom) {
+	public Room(String title, String room_Password, String user_Count, String admin, int priv) {
 		super();
 		this.title = title;
 		this.room_Password = room_Password;
 		this.user_Count = user_Count;
 		this.admin = admin;
 		this.priv = priv;
-		this.userListInRoom = userListInRoom;
+		this.userListInRoom = new ArrayList<>();
 	}
 
 	public int getRoom_Num() {
