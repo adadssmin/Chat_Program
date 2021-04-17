@@ -48,6 +48,10 @@ public class Server {
 		System.out.println(str + " - " + fm.format(today));
 	}
 	
+	public static int getPort() {
+		return PORT;
+	}
+
 	public static void main(String[] args) {
 		new Server();
 	}

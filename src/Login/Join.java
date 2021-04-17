@@ -7,6 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.text.MaskFormatter;
 
+import lunch.Protocol;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
@@ -20,16 +22,17 @@ import javax.swing.JFormattedTextField;
 
 public class Join extends JFrame{
 
-	private JTextField txtField_ID;
-	private JPasswordField pwField_PW, pwField_CheckPw;
-	private JTextField txtField_Email;
+	public JTextField txtField_ID;
+	public JPasswordField pwField_PW, pwField_CheckPw;
+	public JTextField txtField_Email;
+	public JButton btn_CheckID, btn_CheckPw, btn_Join; 
 	private MaskFormatter mask;
 	private JFormattedTextField tfphoneNum;
 	private ImageIcon iconLogo;
 	private Image imgLogo;
 	private Image changeImg;
 	private ImageIcon changeIcon;
-	private JLabel lbl_Logo;
+	public JLabel lbl_Logo, lblNewLabel_6, lbl_CheckPw;
 
 	public Join() {
 		EventQueue.invokeLater(new Runnable() {
@@ -108,29 +111,29 @@ public class Join extends JFrame{
 		txtField_Email.setColumns(10);
 		getContentPane().add(txtField_Email);
 		
-		JLabel lblNewLabel_6 = new JLabel("Please, check your ID");
+		lblNewLabel_6 = new JLabel("Please, check your ID");
 		lblNewLabel_6.setBounds(160, 216, 182, 27);
 		lblNewLabel_6.setFont(new Font("����", Font.BOLD, 15));
 		lblNewLabel_6.setForeground(Color.BLUE);
 		lblNewLabel_6.setBackground(Color.WHITE);
 		getContentPane().add(lblNewLabel_6);
 		
-		JButton btn_CheckID = new JButton("\uC911\uBCF5\uD655\uC778");
-		btn_CheckID.setBounds(442, 186, 126, 30);
-		btn_CheckID.setBackground(new Color(173, 216, 230));
-		getContentPane().add(btn_CheckID);
+//		btn_CheckID = new JButton("\uC911\uBCF5\uD655\uC778");
+//		btn_CheckID.setBounds(442, 186, 126, 30);
+//		btn_CheckID.setBackground(new Color(173, 216, 230));
+//		getContentPane().add(btn_CheckID);
 		
-		JButton btn_CheckPw = new JButton("비밀번호 확인");
-		btn_CheckPw.setBounds(442, 292, 126, 30);
-		btn_CheckPw.setBackground(new Color(173, 216, 230));
-		getContentPane().add(btn_CheckPw);
+//		btn_CheckPw = new JButton("비밀번호 확인");
+//		btn_CheckPw.setBounds(442, 292, 126, 30);
+//		btn_CheckPw.setBackground(new Color(173, 216, 230));
+//		getContentPane().add(btn_CheckPw);
 		
-		JButton btn_Join = new JButton("가입하기");
+		btn_Join = new JButton("가입하기");
 		btn_Join.setBounds(205, 480, 163, 30);
 		btn_Join.setBackground(new Color(173, 216, 230));
 		getContentPane().add(btn_Join);
 		
-		JLabel lbl_CheckPw = new JLabel("Please, check your password");
+		lbl_CheckPw = new JLabel("Please, check your password");
 		lbl_CheckPw.setBounds(160, 324, 255, 28);
 		lbl_CheckPw.setForeground(Color.BLUE);
 		lbl_CheckPw.setFont(new Font("굴림", Font.BOLD, 15));
@@ -155,5 +158,25 @@ public class Join extends JFrame{
 		setBounds(100, 100, 617, 592);
 		setLocationRelativeTo(null);
 		getContentPane().setBackground(new Color(173, 216, 230));
+	}
+	
+	public String getPWCheck() {
+		String pwcheck = "";
+		char[] secret_pwcheck = pwField_CheckPw.getPassword();
+		for(char cha : secret_pwcheck) {
+			Character.toString(cha);
+			pwcheck += (pwcheck.equals("")) ? "" + cha + "" : "" + cha + "";		
+		}
+		return pwcheck;
+	}
+
+	public String getPW() {
+		String pw = "";
+		char[] secret_pw = pwField_PW.getPassword();
+		for(char cha : secret_pw) {
+			Character.toString(cha);
+			pw += (pw.equals("")) ? "" + cha + "" : "" + cha + "";		
+		}
+		return pw;
 	}
 }

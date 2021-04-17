@@ -38,7 +38,7 @@ public class ProgramGUI extends JFrame implements ActionListener {
 			btn_Search, btn_addChat, btn_Setting, btn_ModifyId, btn_ModifyEmail, btn_ChgPw, btn_ChgPic, btn_Chanel,
 			btn_ChatRoom;
 	public JScrollPane scrollRoomList;
-	public JLabel lbl_ChatList, lbl_getId;
+	public JLabel lbl_ChatList, lbl_getId, lbl_getEmail;
 	private JTextField txtField_chat;
 	private ImageIcon changeIcon_Search, icon_addChat, changeIcon_addChat, icon_Search;
 	private Image img_Search, changeImg_Search, img_addChat, changeImg_addChat;
@@ -138,10 +138,10 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		lbl_Email.setBounds(39, 110, 126, 37);
 		pnl_North.add(lbl_Email);
 
-		JLabel lbl_getPw = new JLabel("get이메일()");
-		lbl_getPw.setFont(new Font("굴림", Font.PLAIN, 20));
-		lbl_getPw.setBounds(161, 110, 194, 37);
-		pnl_North.add(lbl_getPw);
+		lbl_getEmail = new JLabel("get이메일()");
+		lbl_getEmail.setFont(new Font("굴림", Font.PLAIN, 20));
+		lbl_getEmail.setBounds(161, 110, 194, 37);
+		pnl_North.add(lbl_getEmail);
 
 		JLabel lbl_Email_1 = new JLabel("전화번호");
 		lbl_Email_1.setFont(new Font("굴림", Font.BOLD, 20));
