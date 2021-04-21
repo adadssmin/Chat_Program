@@ -24,6 +24,10 @@ public class Protocol {
 	public static final String SEARCHPASSWORD = "220"; // Password찾기
 	public static final String SEARCHPASSWORD_OK = "221"; // Password찾기 (있음)
 	public static final String SEARCHPASSWORD_NO = "222"; // Password찾기 (없음)
+
+	public static final String CHANGEPASSWORD = "230"; // 잊어버린 Password변경
+	public static final String CHANGEPASSWORD_OK = "231"; // 잊어버린 Password변경 성공
+	public static final String CHANGEPASSWORD_NO = "232"; // 잊어버린 Password변경 실패
 	
 	public static final String LOGOUT = "300";//로그아웃
 	
@@ -32,8 +36,17 @@ public class Protocol {
 	public static final String MAKEROOM_ADMIN_OK = "402";//방 만든 유저 성공
 	public static final String MAKEROOM_SHOW = "403";//모든 방 보기
 	
-	public static final String ENTER = "500";//방 입장
-	public static final String ENTER_User = "501";//방 입장
+	public static final String ENTER = "500";//공개방 입장
+	public static final String ENTER_PASSWORD = "501";//비밀방 입장
+	public static final String ENTER_OK = "502";//방 입장 성공
+	public static final String ENTER_NO = "503";//방 입장 실패
 	
 	public static final String EXITROOM = "600";//대화방 퇴장
+	public static final String EXITROOM_OK = "601";//대화방 퇴장 성공
+	public static final String EXITROOM_OK_ALL = "602";//대화방 전체 퇴장 성공
+	
+	public static final String CHATROOMSUBINFO = "700";//채팅방 제목, 인원수, 접속자 목록 새로고침
+	
+	public static final String CHATMESSAGE = "800";//채팅 메세
+	public static final String CHATMESSAGE_OK = "801";//채팅 메세
 }

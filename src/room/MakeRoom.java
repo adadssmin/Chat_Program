@@ -17,6 +17,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import GUI.ProgramGUI;
+
 public class MakeRoom extends JFrame {
 
 	public JDialog dl_addChat;
@@ -103,7 +105,6 @@ public class MakeRoom extends JFrame {
 		add(pnl);
 		setVisible(false);
 		setSize(585, 395);
-		setLocationRelativeTo(null);
 		setResizable(false);
 		setLayout(null);
 	}

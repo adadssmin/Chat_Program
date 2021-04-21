@@ -154,7 +154,7 @@ public class UserDao {
 		return false;
 	}
 
-	public static void updatePW(String password, String id) {
+	public static boolean updatePW(String password, String id) {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String query = "UPDATE user SET password = ? WHERE id = ?";
@@ -163,13 +163,17 @@ public class UserDao {
 			pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, password);
 			pstmt.setString(2, id);
-			pstmt.executeUpdate();
+			int result = pstmt.executeUpdate();
+			if (result == 1) {
+				return true;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			MyConnectionProvider.closeStmt(pstmt);
 			MyConnectionProvider.closeConnection(conn);
 		}
+		return false;
 	}
 
 	public static UserData getUserByPW(String password) {

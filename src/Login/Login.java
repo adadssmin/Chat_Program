@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
@@ -18,20 +20,21 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 
 public class Login extends JFrame {
 
 	private JLabel lbl_LoginLogo, lbl_Id, lbl_Pw;
+	public JLabel lbl_Logo, lbl_hint, lbl_hint_idPwCon, lbl_hint_PwCon;
 	public JButton btn_FindId, btn_FindPw, btn_Join, btn_Login, btn_find
-			, btn_emailChkPw;
+			, btn_emailChkPw, btn_newPwChk, btn_ChangPw;
 	public JTextField txtField_Ip, txtField_Port, textField_Id, txtField_emailId, txtField_Email
 		, txtField_pWEmailId, txtField_pWEmail, txtField_IdPw;
-	public JTextArea ta_SearchId;
-	public JPasswordField pwField_Pw;
+	public JPanel ta_SearchId;
+	public JPasswordField pwField_Pw, pwField_newPw, pwField_newPwChk;
 	public JComboBox comboBox_email, comboBoxPw;
 	public JDialog findID, searchID, findPw;
-	public JLabel lbl_Logo, lbl_hint, lbl_hint_idPwCon;
 	private ImageIcon iconLogo;
 	private Image imgLogo;
 	private Image changeImg;
@@ -45,6 +48,7 @@ public class Login extends JFrame {
 		findID.setLocationRelativeTo(null);
 		findID.setResizable(false);
 		findID.setLayout(null);
+		findID.setModal(true);
 		findIdGUI();
 		
 		// 찾은 아이디
@@ -56,12 +60,14 @@ public class Login extends JFrame {
 		searchID.setLayout(null);
 		searchId();
 		
+		// 비번 찾기
 		findPw = new JDialog();
 		findPw.setVisible(false);
-		findPw.setSize(560, 380);
+		findPw.setSize(560, 420);
 		findPw.setLocationRelativeTo(null);
 		findPw.setResizable(false);
-		findPw.setLayout(null);
+		findPw.getContentPane().setLayout(null);
+		findPw.setModal(true);
 		FindPwGUI();
 		
 		//로그인
@@ -79,12 +85,14 @@ public class Login extends JFrame {
 		txtField_Ip.setBounds(80, 196, 202, 24);
 		getContentPane().add(txtField_Ip);
 		txtField_Ip.setColumns(10);
+		txtField_Ip.setEditable(false);
 
 		txtField_Port = new JTextField();
 		txtField_Port.setBackground(new Color(173, 216, 230));
 		txtField_Port.setHorizontalAlignment(SwingConstants.CENTER);
 		txtField_Port.setColumns(10);
 		txtField_Port.setBounds(294, 196, 115, 24);
+		txtField_Port.setEditable(false);
 		getContentPane().add(txtField_Port);
 
 		textField_Id = new JTextField();
@@ -219,8 +227,9 @@ public class Login extends JFrame {
 		lbl_LoginLogo.setForeground(Color.WHITE);
 		lbl_LoginLogo.setHorizontalAlignment(SwingConstants.LEFT);
 		
-		ta_SearchId = new JTextArea();
-		ta_SearchId.setEditable(false);
+		ta_SearchId = new JPanel();
+		ta_SearchId.setLayout(new BoxLayout(ta_SearchId, BoxLayout.Y_AXIS));
+//		ta_SearchId.setEditable(false);
 		ta_SearchId.setFont(new Font("굴림", Font.BOLD, 20));
 		ta_SearchId.setBackground(SystemColor.inactiveCaptionBorder);
 		ta_SearchId.setBounds(35, 118, 490, 163);
@@ -257,12 +266,12 @@ public class Login extends JFrame {
 
 		JLabel lbl_IdPw = new JLabel("아이디");
 		lbl_IdPw.setFont(new Font("굴림", Font.BOLD, 15));
-		lbl_IdPw.setBounds(39, 125, 59, 23);
+		lbl_IdPw.setBounds(39, 121, 59, 23);
 		pnl_findPw.add(lbl_IdPw);
 
 		JLabel lbl_emailPw = new JLabel("이메일");
 		lbl_emailPw.setFont(new Font("굴림", Font.BOLD, 15));
-		lbl_emailPw.setBounds(39, 158, 59, 23);
+		lbl_emailPw.setBounds(39, 152, 59, 23);
 		pnl_findPw.add(lbl_emailPw);
 
 		JLabel lbl_NewPw = new JLabel("새비밀번호");
@@ -276,60 +285,87 @@ public class Login extends JFrame {
 		pnl_findPw.add(lbl_NewPwChk);
 
 		txtField_IdPw = new JTextField();
-		txtField_IdPw.setBounds(162, 126, 210, 24);
+		txtField_IdPw.setBounds(162, 122, 210, 24);
 		pnl_findPw.add(txtField_IdPw);
 		txtField_IdPw.setColumns(10);
 
 		txtField_pWEmailId = new JTextField();
 		txtField_pWEmailId.setColumns(10);
-		txtField_pWEmailId.setBounds(162, 159, 87, 24);
+		txtField_pWEmailId.setBounds(162, 153, 87, 24);
 		pnl_findPw.add(txtField_pWEmailId);
 
 		txtField_pWEmail = new JTextField();
 		txtField_pWEmail.setColumns(10);
-		txtField_pWEmail.setBounds(274, 159, 98, 24);
+		txtField_pWEmail.setBounds(274, 153, 98, 24);
 		pnl_findPw.add(txtField_pWEmail);
 		
 		String[] combo = {"이메일 선택", "naver.com","daum.com", "google.com", "java.com", "직접입력"};
 		comboBoxPw = new JComboBox(combo);
-		comboBoxPw.setBounds(384, 159, 120, 21);
+		comboBoxPw.setBounds(384, 154, 120, 21);
 		pnl_findPw.add(comboBoxPw);
 
-		JPasswordField pwField_newPw = new JPasswordField();
+		pwField_newPw = new JPasswordField();
 		pwField_newPw.setBounds(162, 219, 210, 24);
 		pnl_findPw.add(pwField_newPw);
 		pwField_newPw.setColumns(10);
 
-		JPasswordField pwField_newPwChk = new JPasswordField();
+		pwField_newPwChk = new JPasswordField();
 		pwField_newPwChk.setColumns(10);
 		pwField_newPwChk.setBounds(162, 252, 210, 24);
 		pnl_findPw.add(pwField_newPwChk);
 
 		btn_emailChkPw = new JButton("확인");
 		btn_emailChkPw.setBackground(new Color(173, 216, 230));
-		btn_emailChkPw.setBounds(384, 189, 120, 23);
+		btn_emailChkPw.setBounds(384, 186, 120, 23);
 		pnl_findPw.add(btn_emailChkPw);
 
-		JButton btn_newPwChk = new JButton("비밀번호 확인");
+		btn_newPwChk = new JButton("비밀번호 확인");
 		btn_newPwChk.setBackground(new Color(173, 216, 230));
 		btn_newPwChk.setBounds(384, 253, 120, 23);
 		pnl_findPw.add(btn_newPwChk);
 
-		JButton btn_findPw = new JButton("비밀번호 찾기");
-		btn_findPw.setBackground(new Color(173, 216, 230));
-		btn_findPw.setBounds(187, 296, 133, 23);
-		pnl_findPw.add(btn_findPw);
+		btn_ChangPw = new JButton("비밀번호 변경");
+		btn_ChangPw.setBackground(new Color(173, 216, 230));
+		btn_ChangPw.setBounds(198, 320, 133, 23);
+		pnl_findPw.add(btn_ChangPw);
 		
 		lbl_hint_idPwCon = new JLabel("아이디와 이메일을 확인해주세요");
 		lbl_hint_idPwCon.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl_hint_idPwCon.setForeground(Color.GRAY);
 		lbl_hint_idPwCon.setFont(new Font("굴림", Font.PLAIN, 15));
-		lbl_hint_idPwCon.setBounds(49, 193, 440, 15);
+		lbl_hint_idPwCon.setBounds(49, 190, 440, 15);
 		pnl_findPw.add(lbl_hint_idPwCon);
 		
 		JLabel lbl_email_anotation = new JLabel("@");
 		lbl_email_anotation.setFont(new Font("굴림", Font.BOLD, 15));
-		lbl_email_anotation.setBounds(255, 161, 23, 23);
+		lbl_email_anotation.setBounds(255, 154, 23, 23);
 		pnl_findPw.add(lbl_email_anotation);
+		
+		lbl_hint_PwCon = new JLabel("");
+		lbl_hint_PwCon.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_hint_PwCon.setForeground(Color.GRAY);
+		lbl_hint_PwCon.setFont(new Font("굴림", Font.PLAIN, 15));
+		lbl_hint_PwCon.setBounds(49, 288, 440, 15);
+		pnl_findPw.add(lbl_hint_PwCon);
+	}
+	
+	public String getNewPWCheck() {
+		String pwcheck = "";
+		char[] secret_pwcheck = pwField_newPwChk.getPassword();
+		for(char cha : secret_pwcheck) {
+			Character.toString(cha);
+			pwcheck += (pwcheck.equals("")) ? "" + cha + "" : "" + cha + "";		
+		}
+		return pwcheck;
+	}
+
+	public String getNewPW() {
+		String pw = "";
+		char[] secret_pw = pwField_newPw.getPassword();
+		for(char cha : secret_pw) {
+			Character.toString(cha);
+			pw += (pw.equals("")) ? "" + cha + "" : "" + cha + "";		
+		}
+		return pw;
 	}
 }

@@ -1,12 +1,15 @@
 package GUI;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.ScrollPane;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -18,10 +21,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.text.AbstractDocument.Content;
 
 import lunch.Protocol;
 import room.AddRoom;
@@ -31,15 +38,17 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.awt.event.ActionEvent;
 
-public class ProgramGUI extends JFrame implements ActionListener {
+public class ProgramGUI extends JFrame {
 	public JPanel pnl_Parent, pnl_Friend, pnl_ChatList, pnl_Menu, pnl_back, pnl_North, pnl_South, pnl_Profile, pnl_Chat,
 			pnl_ChatList_set, pnl_Chanel, pnl_ChatRoom;
 	public JButton btn_Friend, btn_ChatList, btn_Profile, btn_FriendList, btn_ModifyPhone, btn_Logout, btn_addFriend,
 			btn_Search, btn_addChat, btn_Setting, btn_ModifyId, btn_ModifyEmail, btn_ChgPw, btn_ChgPic, btn_Chanel,
-			btn_ChatRoom;
-	public JScrollPane scrollRoomList;
-	public JLabel lbl_ChatList, lbl_getId, lbl_getEmail;
-	private JTextField txtField_chat;
+			btn_ChatRoom, btn_Send;
+	public JScrollPane scrollRoomList, scroll;
+	public JLabel lbl_ChatList, lbl_getId, lbl_getEmail, lbl_ChatName, lbl_Persons;
+	public JTextField txtField_chat;
+	public JTextArea textArea;
+	public JDialog passwordCon;
 	private ImageIcon changeIcon_Search, icon_addChat, changeIcon_addChat, icon_Search;
 	private Image img_Search, changeImg_Search, img_addChat, changeImg_addChat;
 
@@ -72,26 +81,26 @@ public class ProgramGUI extends JFrame implements ActionListener {
 
 		pnl_Parent = new JPanel();
 		pnl_Parent.setBackground(new Color(245, 245, 245));
-		pnl_Parent.setBounds(140, 0, 1002, 719);
+		pnl_Parent.setBounds(140, 0, 754, 719);
 		pnl_Parent.setLayout(null);
 		getContentPane().add(pnl_Parent);
 
 		// 프로필 패널
 		pnl_Profile = new JPanel();
 		pnl_Profile.setBackground(new Color(245, 245, 245));
-		pnl_Profile.setBounds(0, 0, 1002, 719);
+		pnl_Profile.setBounds(0, 0, 754, 719);
 		pnl_Profile.setLayout(null);
 
 		// 친구 패널
 		pnl_Friend = new JPanel();
 		pnl_Friend.setBackground(new Color(245, 245, 245));
-		pnl_Friend.setBounds(0, 0, 1002, 719);
+		pnl_Friend.setBounds(0, 0, 754, 719);
 		pnl_Friend.setLayout(null);
 
 		// 채널 패널
 		pnl_Chanel = new JPanel();
 		pnl_Chanel.setBackground(new Color(245, 245, 245));
-		pnl_Chanel.setBounds(0, 0, 1002, 719);
+		pnl_Chanel.setBounds(0, 0, 754, 719);
 		pnl_Chanel.setLayout(null);
 
 		// 채팅방 패널
@@ -101,25 +110,33 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		pnl_ChatRoom.setLayout(null);
 		pnl_ChatRoom.setVisible(false);
 		ChatRoomGUI();
+		
+//		passwordCon = new JDialog();
+//		passwordCon.setVisible(false);
+//		passwordCon.setSize(567, 347);
+//		passwordCon.setLocationRelativeTo(null);
+//		passwordCon.setResizable(false);
+//		passwordCon.setLayout(null);
+//		passwordCon.setModal(true);
 
 		pnl_Parent.add(pnl_Chanel); // 첫 실행시 초기화면
 
 		//----------------------------ProfileGUI()----------------------------
 		pnl_back = new JPanel();
 		pnl_back.setBackground(new Color(173, 216, 230));
-		pnl_back.setBounds(48, 28, 894, 637);
+		pnl_back.setBounds(36, 39, 686, 637);
 		pnl_Profile.add(pnl_back);
 		pnl_back.setLayout(null);
 
 		pnl_North = new JPanel();
 		pnl_North.setBackground(new Color(245, 245, 245));
-		pnl_North.setBounds(37, 112, 820, 270);
+		pnl_North.setBounds(37, 112, 618, 270);
 		pnl_back.add(pnl_North);
 		pnl_North.setLayout(null);
 
 		pnl_South = new JPanel();
 		pnl_South.setBackground(new Color(245, 245, 245));
-		pnl_South.setBounds(37, 394, 820, 215);
+		pnl_South.setBounds(37, 394, 618, 215);
 		pnl_back.add(pnl_South);
 		pnl_South.setLayout(null);
 
@@ -128,19 +145,19 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		lbl_Id.setBounds(39, 36, 126, 37);
 		pnl_North.add(lbl_Id);
 
-		lbl_getId = new JLabel("겟아이디()");
+		lbl_getId = new JLabel("");
 		lbl_getId.setFont(new Font("굴림", Font.PLAIN, 20));
 		lbl_getId.setBounds(161, 36, 226, 37);
 		pnl_North.add(lbl_getId);
 
 		JLabel lbl_Email = new JLabel("이메일");
 		lbl_Email.setFont(new Font("굴림", Font.BOLD, 20));
-		lbl_Email.setBounds(39, 110, 126, 37);
+		lbl_Email.setBounds(39, 107, 126, 37);
 		pnl_North.add(lbl_Email);
 
-		lbl_getEmail = new JLabel("get이메일()");
+		lbl_getEmail = new JLabel("");
 		lbl_getEmail.setFont(new Font("굴림", Font.PLAIN, 20));
-		lbl_getEmail.setBounds(161, 110, 194, 37);
+		lbl_getEmail.setBounds(161, 107, 194, 37);
 		pnl_North.add(lbl_getEmail);
 
 		JLabel lbl_Email_1 = new JLabel("전화번호");
@@ -160,27 +177,27 @@ public class ProgramGUI extends JFrame implements ActionListener {
 
 		btn_ModifyId = new JButton("아이디 수정");
 		btn_ModifyId.setBackground(new Color(220, 220, 220));
-		btn_ModifyId.setBounds(665, 37, 141, 38);
+		btn_ModifyId.setBounds(446, 35, 141, 38);
 		pnl_North.add(btn_ModifyId);
 
 		btn_ModifyEmail = new JButton("이메일 수정");
 		btn_ModifyEmail.setBackground(new Color(220, 220, 220));
-		btn_ModifyEmail.setBounds(665, 111, 141, 38);
+		btn_ModifyEmail.setBounds(446, 106, 141, 38);
 		pnl_North.add(btn_ModifyEmail);
 
 		btn_ModifyPhone = new JButton("전화번호 수정");
 		btn_ModifyPhone.setBackground(new Color(220, 220, 220));
-		btn_ModifyPhone.setBounds(665, 176, 141, 38);
+		btn_ModifyPhone.setBounds(446, 174, 141, 38);
 		pnl_North.add(btn_ModifyPhone);
 
 		btn_ChgPw = new JButton("비밀번호 변경");
 		btn_ChgPw.setBackground(new Color(220, 220, 220));
-		btn_ChgPw.setBounds(665, 27, 141, 38);
+		btn_ChgPw.setBounds(446, 27, 141, 38);
 		pnl_South.add(btn_ChgPw);
 
 		btn_Logout = new JButton("로그아웃");
 		btn_Logout.setBackground(new Color(220, 220, 220));
-		btn_Logout.setBounds(665, 137, 141, 38);
+		btn_Logout.setBounds(446, 137, 141, 38);
 		pnl_South.add(btn_Logout);
 
 		// 프로필 사진 라벨
@@ -190,14 +207,14 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		ImageIcon changeIcon_ProfilePic = new ImageIcon(changeImg_profilePic);
 		JLabel lbl_Pic = new JLabel(changeIcon_ProfilePic);
 		lbl_Pic.setHorizontalAlignment(SwingConstants.CENTER);
-		lbl_Pic.setOpaque(true);
+//		lbl_Pic.setOpaque(true);
 		lbl_Pic.setBounds(39, 12, 89, 88);
 		pnl_back.add(lbl_Pic);
 
 		//----------------------------FriendGUI()----------------------------
 		btn_ChgPic = new JButton("프로필사진 변경");
 		btn_ChgPic.setBackground(new Color(220, 220, 220));
-		btn_ChgPic.setBounds(700, 43, 157, 38);
+		btn_ChgPic.setBounds(474, 43, 157, 38);
 		pnl_back.add(btn_ChgPic);
 
 		JLabel lbl_myProfile = new JLabel("내 프로필");
@@ -212,12 +229,12 @@ public class ProgramGUI extends JFrame implements ActionListener {
 
 		btn_Profile = new JButton("New button");
 		btn_Profile.setBackground(new Color(245, 245, 245));
-		btn_Profile.setBounds(36, 73, 916, 93);
+		btn_Profile.setBounds(36, 73, 679, 93);
 		pnl_Friend.add(btn_Profile);
 
 		btn_FriendList = new JButton("New button");
 		btn_FriendList.setBackground(new Color(245, 245, 245));
-		btn_FriendList.setBounds(36, 246, 916, 93);
+		btn_FriendList.setBounds(36, 246, 679, 93);
 		pnl_Friend.add(btn_FriendList);
 
 		ImageIcon icon_addFriend = new ImageIcon(".\\icon\\addFriend.png");
@@ -225,11 +242,10 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		Image changeImg_addFriend = img_addFriend.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 		ImageIcon changeIcon_addFriend = new ImageIcon(changeImg_addFriend);
 		btn_addFriend = new JButton(changeIcon_addFriend);
-		btn_addFriend.setBounds(900, 24, 50, 50);
+		btn_addFriend.setBounds(670, 24, 50, 50);
 		pnl_Friend.add(btn_addFriend);
 		btn_addFriend.setBorderPainted(false);
 		btn_addFriend.setContentAreaFilled(false);
-		btn_addFriend.addActionListener(this);
 
 		//----------------------------ChanelGUI()----------------------------
 		lbl_ChatList = new JLabel("채팅방");
@@ -243,11 +259,10 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		changeImg_Search = img_Search.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 		changeIcon_Search = new ImageIcon(changeImg_Search);
 		btn_Search = new JButton(changeIcon_Search);
-		btn_Search.setBounds(835, 24, 50, 50);
+		btn_Search.setBounds(620, 24, 50, 50);
 		pnl_Chanel.add(btn_Search);
 		btn_Search.setBorderPainted(false);
 		btn_Search.setContentAreaFilled(false);
-		btn_Search.addActionListener(this);
 
 		// 채팅방 생성 버튼
 		icon_addChat = new ImageIcon(".\\icon\\addChat.png");
@@ -255,27 +270,28 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		changeImg_addChat = img_addChat.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
 		changeIcon_addChat = new ImageIcon(changeImg_addChat);
 		btn_addChat = new JButton(changeIcon_addChat);
-		btn_addChat.setBounds(900, 24, 50, 50);
+		btn_addChat.setBounds(685, 24, 50, 50);
 		pnl_Chanel.add(btn_addChat);
 		btn_addChat.setBorderPainted(false);
 		btn_addChat.setContentAreaFilled(false);
-		btn_addChat.addActionListener(this);
 		
 		//생성되어있는 대화방 불러오기
-		addRoom = new AddRoom[50];
+		addRoom = new AddRoom[30];
 		pnl_Chat = new JPanel(); // 50개
 		pnl_Chat.setBackground(new Color(245, 245, 245));
-		pnl_Chat.setLayout(new GridLayout(50, 1));
-		for (int i = 1; i < 50; i++) {
+		pnl_Chat.setLayout(new GridLayout(30, 1));
+		for (int i = 1; i < 30; i++) {
 			addRoom[i] = new AddRoom(bReader, pWriter);
 			addRoom[i].setBackground(new Color(245, 245, 245));
+			addRoom[i].setLayout(new GridLayout(3, 3, 5, 5));
+			addRoom[i].setPreferredSize(new Dimension(661, 100));
+			addRoom[i].setBorderPainted(false);
+			addRoom[i].setContentAreaFilled(false);
 			pnl_Chat.add(addRoom[i]);
-			addRoom[i].revalidate();
-			addRoom[i].repaint();
 		}
 		scrollRoomList = new JScrollPane(pnl_Chat);
 		scrollRoomList.setBackground(new Color(245, 245, 245));
-		scrollRoomList.setBounds(39, 115, 926, 564);
+		scrollRoomList.setBounds(39, 100, 690, 564);
 		scrollRoomList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollRoomList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollRoomList.getVerticalScrollBar().setUnitIncrement(16);
@@ -295,7 +311,6 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		pnl_Menu.add(btn_Profile);
 		btn_Profile.setBorderPainted(false);
 		btn_Profile.setContentAreaFilled(false);
-		btn_Profile.addActionListener(this);
 
 		ImageIcon icon_Friend = new ImageIcon(".\\icon\\Friend.png");
 		Image img_Friend = icon_Friend.getImage();
@@ -307,7 +322,6 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		pnl_Menu.add(btn_Friend);
 		btn_Friend.setBorderPainted(false);
 		btn_Friend.setContentAreaFilled(false);
-		btn_Friend.addActionListener(this);
 
 		//----------------------------addButton()----------------------------
 		// 채널 버튼 이미지 셋팅
@@ -322,7 +336,6 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		btn_Chanel.setBorderPainted(false);
 		btn_Chanel.setContentAreaFilled(false);
 //				btn_Profile.setFocusPainted(false);
-		btn_Chanel.addActionListener(this);
 
 		// 채팅목록 버튼 이미지 셋팅
 		ImageIcon icon_ChatList = new ImageIcon(".\\icon\\Chat.png");
@@ -336,7 +349,6 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		btn_ChatRoom.setBorderPainted(false);
 		btn_ChatRoom.setContentAreaFilled(false);
 //				btn_ChatList.setFocusPainted(false);
-		btn_ChatRoom.addActionListener(this);
 
 		// 셋팅 버튼 이미지 셋팅
 		ImageIcon icon_Setting = new ImageIcon(".\\icon\\setting.png");
@@ -350,16 +362,14 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		btn_Setting.setBorderPainted(false);
 		btn_Setting.setContentAreaFilled(false);
 //				btn_Profile.setFocusPainted(false);
-		btn_Setting.addActionListener(this);
 
 		setResizable(false);
-		setBounds(100, 100, 1148, 748);
+		setBounds(100, 100, 910, 748);
 		setLocationRelativeTo(null);
-//		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	public void ChatRoomGUI() {
-		JLabel lbl_ChatName = new JLabel("get채팅방 이름()");
+		lbl_ChatName = new JLabel("get채팅방 이름()");
 		lbl_ChatName.setFont(new Font("HY�︪��M", Font.BOLD, 25));
 		lbl_ChatName.setHorizontalAlignment(SwingConstants.LEFT);
 		lbl_ChatName.setBounds(14, 12, 205, 38);
@@ -370,16 +380,26 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		pnl_ChatRoom.add(panel_2);
 		panel_2.setLayout(null);
 
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(14, 12, 648, 454);
-		panel_2.add(textArea);
+		textArea = new JTextArea();
+		textArea.setFont(new Font("굴림", Font.BOLD, 18));
+		textArea.setEditable(false);
+		textArea.setLineWrap(true);
+		textArea.setAutoscrolls(true);
+		textArea.setWrapStyleWord(true); //마지막 단어가 두행에 걸쳐 나뉘지 않도록 하기
+		textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		scroll = new JScrollPane(textArea);
+		scroll.setBounds(14, 12, 648, 454);
+		JScrollBar vertical = scroll.getVerticalScrollBar();
+		vertical.setValue(vertical.getMaximum());
+		panel_2.add(scroll, BorderLayout.CENTER);
 
 		txtField_chat = new JTextField();
 		txtField_chat.setBounds(14, 478, 484, 132);
+		txtField_chat.setFont(new Font("굴림", Font.BOLD, 18));
 		panel_2.add(txtField_chat);
 		txtField_chat.setColumns(10);
 
-		JButton btn_Send = new JButton("전송");
+		btn_Send = new JButton("전송");
 		btn_Send.setBackground(new Color(173, 216, 230));
 		btn_Send.setBounds(509, 478, 153, 132);
 		panel_2.add(btn_Send);
@@ -439,58 +459,54 @@ public class ProgramGUI extends JFrame implements ActionListener {
 		btn_user10.setBounds(14, 568, 243, 50);
 		panel_3.add(btn_user10);
 
-		JLabel lbl_Persons = new JLabel("참여인원 get인원()");
+		lbl_Persons = new JLabel("참여인원 get인원()");
 		lbl_Persons.setFont(new Font("HY�︪��B", Font.BOLD, 25));
 		lbl_Persons.setBounds(711, 12, 222, 38);
 		pnl_ChatRoom.add(lbl_Persons);
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// 각 메뉴 클릭시
-		Object ob = e.getSource();
-		if (ob == btn_Profile) {
-			pnl_Parent.removeAll();
-			pnl_Parent.add(pnl_Profile);
-			pnl_Parent.repaint();
-			pnl_Parent.revalidate();
-		} else if (ob == btn_Friend) {
-			pnl_Parent.add(pnl_Friend);
-			pnl_Parent.removeAll();
-			pnl_Parent.add(pnl_Friend);
-			pnl_Parent.repaint();
-			pnl_Parent.revalidate();
-		} 
-//		else if (ob == btn_Chanel) {
-//			pnl_Parent.add(pnl_Chanel);
-//			pnl_Parent.removeAll();
-//			pnl_Parent.add(pnl_Chanel);
-//			pnl_Parent.repaint();
-//			pnl_Parent.revalidate();
-//		} else if (ob == btn_ChatRoom) {
-//			pnl_Parent.add(pnl_ChatRoom);
-//			pnl_Parent.removeAll();
-//			pnl_Parent.add(pnl_ChatRoom);
-//			pnl_Parent.repaint();
-//			pnl_Parent.revalidate();
-//		}
-
-//		// 채팅방 생성버튼 클릭시
-//		if (ob == btn_addChat) {
-//			CreateChatRoom();
-//		} else if (ob == btn_Search) {
-//			System.out.println("검색창");
-//		}
-	}
-
+//	public void passwordCon() {
+//		JPanel pnl = new JPanel();
+//		pnl.setBackground(new Color(173, 216, 230));
+//		pnl.setBounds(0, 0, 486, 273);
+//		passwordCon.getContentPane().add(pnl);
+//		pnl.setLayout(null);
+//		
+//		JLabel lbl_PasswordLogo = new JLabel("Password");
+//		lbl_PasswordLogo.setBounds(25, 6, 177, 78);
+//		pnl.add(lbl_PasswordLogo);
+//		lbl_PasswordLogo.setFont(new Font("Arial", Font.BOLD, 35));
+//		lbl_PasswordLogo.setForeground(Color.WHITE);
+//		lbl_PasswordLogo.setHorizontalAlignment(SwingConstants.LEFT);
+//		
+//		JLabel lbl_password = new JLabel("비밀번호");
+//		lbl_password.setFont(new Font("굴림", Font.BOLD, 15));
+//		lbl_password.setBounds(62, 122, 67, 27);
+//		pnl.add(lbl_password);
+//		
+//		JPasswordField pf_passwordConfirm = new JPasswordField();
+//		pf_passwordConfirm.setBounds(144, 122, 232, 27);
+//		pnl.add(pf_passwordConfirm);
+//		pf_passwordConfirm.setColumns(10);
+//		
+//		JButton btn_enter = new JButton("입장");
+//		btn_enter.setBackground(new Color(173, 216, 230));
+//		btn_enter.setBounds(184, 201, 111, 27);
+//		pnl.add(btn_enter);
+//	}
+	
 	public void pnlClear() {
 		pnl_Chat.removeAll();
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 30; i++) {
 			addRoom[i] = new AddRoom(bReader, pWriter);
 			addRoom[i].setBackground(new Color(245, 245, 245));
+			addRoom[i].setLayout(new GridLayout(3, 3, 5, 5));
+			addRoom[i].setPreferredSize(new Dimension(661, 100));
+			addRoom[i].setBorderPainted(false);
+			addRoom[i].setContentAreaFilled(false);
 			pnl_Chat.add(addRoom[i]);
-			pnl_Chat.revalidate();
-			pnl_Chat.repaint();
 		}
+		pnl_Chat.revalidate();
+		pnl_Chat.repaint();
 	}
 }

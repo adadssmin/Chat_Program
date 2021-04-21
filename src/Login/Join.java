@@ -18,21 +18,21 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 
 public class Join extends JFrame{
 
-	public JTextField txtField_ID;
 	public JPasswordField pwField_PW, pwField_CheckPw;
-	public JTextField txtField_Email;
+	public JTextField txtField_ID, txtField_EmailID, txtField_Email;
 	public JButton btn_CheckID, btn_CheckPw, btn_Join; 
+	public JLabel lbl_Logo, lblNewLabel_6, lbl_CheckPw, lbl_Check_email;
+	public JComboBox comboBox_email;
+	public JFormattedTextField tfphoneNum;
 	private MaskFormatter mask;
-	private JFormattedTextField tfphoneNum;
-	private ImageIcon iconLogo;
-	private Image imgLogo;
-	private Image changeImg;
-	private ImageIcon changeIcon;
-	public JLabel lbl_Logo, lblNewLabel_6, lbl_CheckPw;
+	private ImageIcon iconLogo, changeIcon;
+	private Image imgLogo, changeImg;
+
 
 	public Join() {
 		EventQueue.invokeLater(new Runnable() {
@@ -47,7 +47,7 @@ public class Join extends JFrame{
 	}
 
 	private void JoinGUI() {
-		getContentPane().setLayout(null);
+getContentPane().setLayout(null);
 		
 		iconLogo = new ImageIcon(".\\icon\\logo.png");
 		imgLogo = iconLogo.getImage();
@@ -69,22 +69,22 @@ public class Join extends JFrame{
 		getContentPane().add(lbl_Join);
 		
 		JLabel lbl_JoinID = new JLabel("\uC544\uC774\uB514");
-		lbl_JoinID.setBounds(71, 181, 77, 40);
+		lbl_JoinID.setBounds(71, 156, 77, 40);
 		lbl_JoinID.setHorizontalAlignment(SwingConstants.LEFT);
 		getContentPane().add(lbl_JoinID);
 		
 		JLabel lbl_JoinPw = new JLabel("\uBE44\uBC00\uBC88\uD638");
-		lbl_JoinPw.setBounds(71, 247, 94, 40);
+		lbl_JoinPw.setBounds(71, 222, 94, 40);
 		lbl_JoinPw.setHorizontalAlignment(SwingConstants.LEFT);
 		getContentPane().add(lbl_JoinPw);
 		
 		JLabel lbl_JoinCheckPw = new JLabel("\uBE44\uBC00\uBC88\uD638 \uD655\uC778");
-		lbl_JoinCheckPw.setBounds(71, 287, 115, 40);
+		lbl_JoinCheckPw.setBounds(71, 262, 115, 40);
 		lbl_JoinCheckPw.setHorizontalAlignment(SwingConstants.LEFT);
 		getContentPane().add(lbl_JoinCheckPw);
 		
 		JLabel lbl_JoinEmail = new JLabel("\uC774\uBA54\uC77C");
-		lbl_JoinEmail.setBounds(71, 356, 77, 40);
+		lbl_JoinEmail.setBounds(71, 331, 77, 40);
 		lbl_JoinEmail.setHorizontalAlignment(SwingConstants.LEFT);
 		getContentPane().add(lbl_JoinEmail);
 		
@@ -94,27 +94,38 @@ public class Join extends JFrame{
 		getContentPane().add(lbl_JoinPhone);
 		
 		txtField_ID = new JTextField();
-		txtField_ID.setBounds(160, 187, 270, 30);
+		txtField_ID.setBounds(160, 162, 270, 30);
 		getContentPane().add(txtField_ID);
 		txtField_ID.setColumns(10);
 		
 		pwField_PW = new JPasswordField();
-		pwField_PW.setBounds(160, 253, 270, 30);
+		pwField_PW.setBounds(160, 228, 270, 30);
 		getContentPane().add(pwField_PW);
 		
 		pwField_CheckPw = new JPasswordField();
-		pwField_CheckPw.setBounds(160, 293, 270, 30);
+		pwField_CheckPw.setBounds(160, 268, 270, 30);
 		getContentPane().add(pwField_CheckPw);
 		
-		txtField_Email = new JTextField();
-		txtField_Email.setBounds(160, 362, 270, 30);
-		txtField_Email.setColumns(10);
-		getContentPane().add(txtField_Email);
+		txtField_EmailID = new JTextField();
+		txtField_EmailID.setBounds(160, 337, 125, 27);
+		txtField_EmailID.setColumns(10);
+		getContentPane().add(txtField_EmailID);
 		
-		lblNewLabel_6 = new JLabel("Please, check your ID");
-		lblNewLabel_6.setBounds(160, 216, 182, 27);
-		lblNewLabel_6.setFont(new Font("����", Font.BOLD, 15));
-		lblNewLabel_6.setForeground(Color.BLUE);
+		String[] combo = {"이메일 선택", "naver.com","daum.com", "google.com", "java.com", "직접입력"};
+		comboBox_email = new JComboBox(combo);
+		comboBox_email.setBounds(444, 338, 110, 26);
+		getContentPane().add(comboBox_email);
+		
+		JLabel lbl_anotation = new JLabel("@");
+		lbl_anotation.setFont(new Font("굴림", Font.PLAIN, 15));
+		lbl_anotation.setBounds(289, 338, 19, 27);
+		getContentPane().add(lbl_anotation);
+		
+		lblNewLabel_6 = new JLabel("");
+		lblNewLabel_6.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel_6.setBounds(160, 196, 270, 27);
+		lblNewLabel_6.setFont(new Font("굴림", Font.BOLD, 15));
+		lblNewLabel_6.setForeground(Color.GRAY);
 		lblNewLabel_6.setBackground(Color.WHITE);
 		getContentPane().add(lblNewLabel_6);
 		
@@ -133,9 +144,10 @@ public class Join extends JFrame{
 		btn_Join.setBackground(new Color(173, 216, 230));
 		getContentPane().add(btn_Join);
 		
-		lbl_CheckPw = new JLabel("Please, check your password");
-		lbl_CheckPw.setBounds(160, 324, 255, 28);
-		lbl_CheckPw.setForeground(Color.BLUE);
+		lbl_CheckPw = new JLabel("");
+		lbl_CheckPw.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_CheckPw.setBounds(160, 302, 270, 28);
+		lbl_CheckPw.setForeground(Color.GRAY);
 		lbl_CheckPw.setFont(new Font("굴림", Font.BOLD, 15));
 		getContentPane().add(lbl_CheckPw);
 
@@ -158,6 +170,18 @@ public class Join extends JFrame{
 		setBounds(100, 100, 617, 592);
 		setLocationRelativeTo(null);
 		getContentPane().setBackground(new Color(173, 216, 230));
+		
+		txtField_Email = new JTextField("이메일 선택");
+		txtField_Email.setColumns(10);
+		txtField_Email.setBounds(305, 337, 125, 27);
+		getContentPane().add(txtField_Email);
+		
+		lbl_Check_email = new JLabel("");
+		lbl_Check_email.setHorizontalAlignment(SwingConstants.CENTER);
+		lbl_Check_email.setForeground(Color.GRAY);
+		lbl_Check_email.setFont(new Font("굴림", Font.BOLD, 15));
+		lbl_Check_email.setBounds(162, 368, 268, 28);
+		getContentPane().add(lbl_Check_email);
 	}
 	
 	public String getPWCheck() {

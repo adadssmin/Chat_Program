@@ -12,6 +12,7 @@ public class Room {
 	private String admin;
 	private int priv;//
 	public ArrayList<ServerHandler> userListInRoom;
+	private int userCountInRoom;
 	
 	public Room() {
 		this.room_Num = 0;
@@ -32,6 +33,18 @@ public class Room {
 		this.admin = admin;
 		this.priv = condtionP;
 		this.userListInRoom = new ArrayList<>();
+		this.userCountInRoom = userListInRoom.size();
+	}
+	public Room(int room_Num, String title, String room_Password, String user_Count, String admin, int condtionP, int userCountInRoom) {
+		super();
+		this.room_Num = room_Num;
+		this.title = title;
+		this.room_Password = room_Password;
+		this.user_Count = user_Count;
+		this.admin = admin;
+		this.priv = condtionP;
+		this.userListInRoom = new ArrayList<>();
+		this.userCountInRoom = userCountInRoom;
 	}
 	
 	public Room(String title, String room_Password, String user_Count, String admin, int priv) {
@@ -99,10 +112,17 @@ public class Room {
 	public void setUserListInRoom(ArrayList<ServerHandler> userListInRoom) {
 		this.userListInRoom = userListInRoom;
 	}
+	public int getUserCountInRoom() {
+		return userCountInRoom;
+	}
+	public void setUserCountInRoom(int userCountInRoom) {
+		this.userCountInRoom = userCountInRoom;
+	}
 
 	@Override
 	public String toString() {
 		return "room_Num: " + room_Num + ", title: " + title + ", room_Password: " + room_Password + ", user_Count: "
-				+ user_Count + ", admin: " + admin + ", priv: " + priv + ", userListInRoom: " + userListInRoom;
+				+ user_Count + ", admin: " + admin + ", priv: " + priv + ", userListInRoom: " + userListInRoom
+				+ ", userCountInRoom: " + userCountInRoom;
 	}
 }
