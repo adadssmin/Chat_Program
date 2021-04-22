@@ -1,4 +1,3 @@
-package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -39,7 +38,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.awt.event.ActionEvent;
 
-public class ProgramGUI extends JFrame {
+public class TestJFrame extends JFrame {
 	public JPanel pnl_Parent, pnl_Friend, pnl_ChatList, pnl_Menu, pnl_back, pnl_North, pnl_South, pnl_Profile, pnl_Chat,
 			pnl_ChatList_set, pnl_Chanel, pnl_ChatRoom, pnl_UserInRoom;
 	public JButton btn_Friend, btn_ChatList, btn_Profile, btn_FriendList, btn_ModifyPhone, btn_Logout, btn_addFriend,
@@ -58,7 +57,7 @@ public class ProgramGUI extends JFrame {
 	public BufferedReader bReader;
 	public PrintWriter pWriter;
 
-	public ProgramGUI(BufferedReader bReader, PrintWriter pWriter) {
+	public TestJFrame(BufferedReader bReader, PrintWriter pWriter) {
 		this.pWriter = pWriter;
 		ProfileGUI(bReader, pWriter);
 //		EventQueue.invokeLater(new Runnable() {
@@ -83,7 +82,7 @@ public class ProgramGUI extends JFrame {
 
 		pnl_Parent = new JPanel();
 		pnl_Parent.setBackground(new Color(245, 245, 245));
-		pnl_Parent.setBounds(140, 0, 754, 719);
+		pnl_Parent.setBounds(140, 0, 1114, 719);
 		pnl_Parent.setLayout(null);
 		getContentPane().add(pnl_Parent);
 
@@ -110,8 +109,7 @@ public class ProgramGUI extends JFrame {
 		pnl_ChatRoom.setBackground(new Color(245, 245, 245));
 		pnl_ChatRoom.setBounds(0, 0, 1002, 719);
 		pnl_ChatRoom.setLayout(null);
-		pnl_ChatRoom.setVisible(false);
-		ChatRoomGUI();
+//		ChatRoomGUI();
 		
 //		passwordCon = new JDialog();
 //		passwordCon.setVisible(false);
@@ -121,7 +119,7 @@ public class ProgramGUI extends JFrame {
 //		passwordCon.setLayout(null);
 //		passwordCon.setModal(true);
 
-		pnl_Parent.add(pnl_Chanel); // 첫 실행시 초기화면
+		pnl_Parent.add(pnl_ChatRoom); // 첫 실행시 초기화면
 
 		//----------------------------ProfileGUI()----------------------------
 		pnl_back = new JPanel();
@@ -366,11 +364,11 @@ public class ProgramGUI extends JFrame {
 //				btn_Profile.setFocusPainted(false);
 
 		setResizable(false);
-		setBounds(100, 100, 910, 748);
+		setBounds(100, 100, 1114, 748);
 		setLocationRelativeTo(null);
-	}
-	
-	public void ChatRoomGUI() {
+
+		//-----------------대화방------------
+		
 		lbl_ChatName = new JLabel("");
 		lbl_ChatName.setFont(new Font("HY�︪��M", Font.BOLD, 25));
 		lbl_ChatName.setHorizontalAlignment(SwingConstants.LEFT);
@@ -410,18 +408,74 @@ public class ProgramGUI extends JFrame {
 		pnl_UserInRoom = new JPanel();
 		pnl_UserInRoom.setBackground(new Color(245, 245, 245));
 		pnl_UserInRoom.setLayout(new GridLayout(10, 1));
-		pnl_UserInRoom.setBounds(705, 55, 271, 636);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 1; i < 10; i++) {
 			addUser[i] = new AddUser(bReader, pWriter);
-			addUser[i].setBackground(new Color(211, 211, 211));
+			addUser[i].setBackground(new Color(245, 245, 245));
 			addUser[i].setPreferredSize(new Dimension(243, 50));
 			addUser[i].setBorderPainted(false);
 			addUser[i].setContentAreaFilled(false);
 			pnl_UserInRoom.add(addUser[i]);
 		}
-		pnl_UserInRoom.revalidate();
-		pnl_UserInRoom.repaint();
-		pnl_ChatRoom.add(pnl_UserInRoom);
+//		scrollUserList = new JScrollPane(pnl_UserInRoom);
+		scrollUserList.setBackground(new Color(245, 245, 245));
+		scrollUserList.setBounds(705, 55, 271, 636);
+		scrollUserList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollUserList.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollUserList.getVerticalScrollBar().setUnitIncrement(16);
+//		scrollUserList.setViewportView(pnl_UserInRoom);
+		scrollUserList.revalidate();
+		scrollUserList.repaint();
+		panel_2.add(pnl_UserInRoom);
+
+		JButton btn_user1 = new JButton("USER1");
+		btn_user1.setBackground(new Color(211, 211, 211));
+		btn_user1.setBounds(14, 12, 243, 50);
+		pnl_UserInRoom.add(btn_user1);
+//
+//		JButton btn_user2 = new JButton("USER2");
+//		btn_user2.setBackground(new Color(211, 211, 211));
+//		btn_user2.setBounds(14, 72, 243, 50);
+//		panel_3.add(btn_user2);
+//
+//		JButton btn_user3 = new JButton("USER3");
+//		btn_user3.setBackground(new Color(211, 211, 211));
+//		btn_user3.setBounds(14, 134, 243, 50);
+//		panel_3.add(btn_user3);
+//
+//		JButton btn_user4 = new JButton("USER4");
+//		btn_user4.setBackground(new Color(211, 211, 211));
+//		btn_user4.setBounds(14, 196, 243, 50);
+//		panel_3.add(btn_user4);
+//
+//		JButton btn_user5 = new JButton("USER5");
+//		btn_user5.setBackground(new Color(211, 211, 211));
+//		btn_user5.setBounds(14, 258, 243, 50);
+//		panel_3.add(btn_user5);
+//
+//		JButton btn_user6 = new JButton("USER6");
+//		btn_user6.setBackground(new Color(211, 211, 211));
+//		btn_user6.setBounds(14, 320, 243, 50);
+//		panel_3.add(btn_user6);
+//
+//		JButton btn_user7 = new JButton("USER7");
+//		btn_user7.setBackground(new Color(211, 211, 211));
+//		btn_user7.setBounds(14, 382, 243, 50);
+//		panel_3.add(btn_user7);
+//
+//		JButton btn_user8 = new JButton("USER8");
+//		btn_user8.setBackground(new Color(211, 211, 211));
+//		btn_user8.setBounds(14, 444, 243, 50);
+//		panel_3.add(btn_user8);
+//
+//		JButton btn_user9 = new JButton("USER9");
+//		btn_user9.setBackground(new Color(211, 211, 211));
+//		btn_user9.setBounds(14, 506, 243, 50);
+//		panel_3.add(btn_user9);
+//
+//		JButton btn_user10 = new JButton("USER 10");
+//		btn_user10.setBackground(new Color(211, 211, 211));
+//		btn_user10.setBounds(14, 568, 243, 50);
+//		panel_3.add(btn_user10);
 
 		lbl_Persons = new JLabel("참여인원 get인원()");
 		lbl_Persons.setFont(new Font("HY�︪��B", Font.BOLD, 25));

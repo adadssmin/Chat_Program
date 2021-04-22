@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -103,8 +104,8 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 	public void connection() {
 		try {
 			socket = new Socket("localhost", 9999);
-			bReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			pWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			bReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "EUC_KR"));
+			pWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "EUC-KR"));
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			System.out.println("서버를 찾을 수 없습니다");
@@ -882,9 +883,8 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 					programGUI.pnl_Parent.revalidate();
 					
 				} else if (line[0].compareTo(Protocol.CHATROOMSUBINFO) == 0) {
-					String[] userIdInRoom = line[2].split("@");
+					refrashUser(line[2]);
 					programGUI.lbl_Persons.setText("   " + line[1]);
-					
 					
 				} else if (line[0].compareTo(Protocol.CHATMESSAGE_OK) == 0) {
 					SimpleDateFormat fm = null;
@@ -910,17 +910,31 @@ public class MainAction extends JFrame implements ActionListener, Runnable {
 		return str;
 	}
 	
-	public void refrashRoom(String line) {
-		String allRoom[] = line.split("-");// 존재하는 방을 모두 보여줌
+	public void refrashUser(String Userline) {
+		String allUser[] = Userline.split("@");// 존재하는 유저를 모두 보여줌
+		String userId = "";
+		programGUI.pnlUserClear();// 새로고침(1)
+		
+		for (int i = 0; i < allUser.length; i++) {
+			userId = allUser[i];
+			programGUI.addUser[i].init();
+			programGUI.addUser[i].setText(userId);//유저 아이디
+			programGUI.addUser[i].setFont(new Font("맑은 고딕", Font.BOLD, 18));
+			programGUI.addUser[i].revalidate();
+			programGUI.addUser[i].repaint();
+		}
+	}
+	
+	public void refrashRoom(String Roomline) {
+		String allRoom[] = Roomline.split("-");// 존재하는 방을 모두 보여줌
 		String roomInfo[];// 방 세부 정보별로 자른것
-		programGUI.pnlClear();// 새로고침(1)
+		programGUI.pnlRoomClear();// 새로고침(1)
 		for (int i = 0; i < allRoom.length; i++) {
 			String userCount = "";
 			programGUI.addRoom[i].init();// 생성되어있는 방 새로고침(2)
 			roomInfo = allRoom[i].split("@");
 			// 비밀방 - 0: 방번호, 1: 방제목, 2: 방비번, 3: 인원수, 4: 방장, 5: 비밀방/공개방, 6: 참가인원
 			// 공개방 - 0: 방번호, 1: 방제목, 2: 인원수, 3: 방장, 4: 비밀방/공개방, 5: 참가인원
-			
 			if (roomInfo.length == 7) {
 				int room_Num = Integer.valueOf(roomInfo[0]);
 				String title = roomInfo[1];

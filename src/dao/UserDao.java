@@ -27,7 +27,6 @@ public class UserDao {
 			pstmt.setString(2, password);
 			pstmt.setString(3, email);
 			int result = pstmt.executeUpdate();
-			System.out.println("추가된 행" + result);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

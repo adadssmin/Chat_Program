@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import GUI.ServerGUI;
 import dao.UserDao;
 import data.Room;
 import data.UserData;
@@ -29,6 +30,7 @@ public class ServerHandler extends Thread {
 	private ResultSet rs;
 	private Room thisRoom; // 사용자가 있는 방
 	private Room roomTemp;
+	private ServerGUI serverGUI;
 	private BufferedReader bReader;
 	private PrintWriter pWriter;
 
@@ -46,12 +48,12 @@ public class ServerHandler extends Thread {
 		this.allUserList = allUserList;
 		this.standbyUserList = standbyUserList;
 		this.totalRoomList = totalRoomList;
+		this.userdao = new UserDao();
 		this.conn = conn;
 		this.logoutId = "";
-		userdao = new UserDao();
 		try {
-			bReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			pWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			bReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "EUC_KR"));
+			pWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "EUC-KR"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -93,7 +95,6 @@ public class ServerHandler extends Thread {
 					String id = joinInfo[0];
 					String pw = joinInfo[1];
 					String email = joinInfo[2] + "@" + joinInfo[3];
-					System.out.println(email);
 					userdao.addUser(id, pw, email);
 
 					if (userdao.findExistId(id)) {
@@ -253,11 +254,24 @@ public class ServerHandler extends Thread {
 						}
 					}
 					for (int i = 0; i < standbyUserList.size(); i++) {
+						String userIdInRoom = "";
+						int thisRoomIndex = thisRoom.getRoom_Num() - 1;
+						for (int j = 0; j < totalRoomList.get(thisRoomIndex).userListInRoom.size(); j++) {
+							userIdInRoom += (totalRoomList.get(thisRoomIndex).userListInRoom.get(j).userData.getId() + "@");
+						}
+						for (int j = 0; j < totalRoomList.get(thisRoomIndex).userListInRoom.size(); j++) {
+							totalRoomList.get(thisRoomIndex).userListInRoom.get(j).pWriter.println(Protocol.CHATROOMSUBINFO + ">" 
+									+ (thisRoom.getUserCountInRoom() + " / " + thisRoom.getUser_Count()) + ">" 
+									+ userIdInRoom);
+							totalRoomList.get(thisRoomIndex).userListInRoom.get(j).pWriter.flush();
+						}
+						System.out.println(userIdInRoom);
 						if (standbyUserList.get(i).userData.getId().compareTo(roomTemp.getAdmin()) == 0) {
 							// 사용자가 방만들면 바로 채팅방들어가도록
 							standbyUserList.get(i).pWriter
 									.println(Protocol.MAKEROOM_ADMIN_OK + ">" + roomListLine + ">"  + roomTemp.getAdmin());
 							standbyUserList.get(i).pWriter.flush();
+							
 						} else {
 							// 다른사용자들이 만들어진 방을 볼 수 있도록
 							standbyUserList.get(i).pWriter.println(Protocol.MAKEROOM_OK + ">" + roomListLine);
@@ -267,7 +281,7 @@ public class ServerHandler extends Thread {
 					System.out.println(roomTemp.getAdmin() + "님이 " + roomTemp.getRoom_Num() + "번방을 생성하셨습니다.");
 					standbyUserList.remove(this);
 					System.out.println("[새로운 방 생성 후 대기자] " + standbyUserList.size());
-
+					
 				} else if (line[0].compareTo(Protocol.ENTER_PASSWORD) == 0) { 
 					String thisId = standbyUserList.get(standbyUserList.indexOf(this)).userData.getId();
 					int enterRoom_num = Integer.valueOf(line[1]);
@@ -326,14 +340,24 @@ public class ServerHandler extends Thread {
 					String userIdInRoom = "";
 					if (totalRoomList.size() > 0) {
 						for (int i = 0; i < totalRoomList.size(); i++) {
-							roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
-									+ totalRoomList.get(i).getTitle() + "@"
-									+ totalRoomList.get(i).getRoom_Password() + "@" 
-									+ totalRoomList.get(i).getUser_Count() + "@"
-									+ totalRoomList.get(i).getAdmin() + "@" 
-									+ totalRoomList.get(i).getPriv() + "@"
-									+ totalRoomList.get(i).getUserCountInRoom() 
-									+ "-");
+							if (totalRoomList.get(i).getPriv() == 1) {
+								roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+										+ totalRoomList.get(i).getTitle() + "@"
+										+ totalRoomList.get(i).getRoom_Password() + "@" 
+										+ totalRoomList.get(i).getUser_Count() + "@"
+										+ totalRoomList.get(i).getAdmin() + "@" 
+										+ totalRoomList.get(i).getPriv() + "@"
+										+ totalRoomList.get(i).getUserCountInRoom() 
+										+ "-");
+							} else if (totalRoomList.get(i).getPriv() == 0) {
+								roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+										+ totalRoomList.get(i).getTitle() + "@"
+										+ totalRoomList.get(i).getUser_Count() + "@" 
+										+ totalRoomList.get(i).getAdmin() + "@"
+										+ totalRoomList.get(i).getPriv() + "@" 
+										+ totalRoomList.get(i).getUserCountInRoom() 
+										+ "-");
+							}
 						}
 						if (totalRoomList.get(thisRoomNum).userListInRoom.size() > 0) {
 							for (int j = 0; j < totalRoomList.get(thisRoomNum).userListInRoom.size(); j++) {
@@ -342,7 +366,6 @@ public class ServerHandler extends Thread {
 							}
 						}
 
-						System.out.println(thisRoomUserCount);
 						for (int j = 0; j < totalRoomList.get(thisRoomNum).userListInRoom.size(); j++) {
 							totalRoomList.get(thisRoomNum).userListInRoom.get(j).pWriter.println(Protocol.CHATROOMSUBINFO + ">" 
 									+ thisRoomUserCount + ">" 
@@ -364,8 +387,8 @@ public class ServerHandler extends Thread {
 					int userInRoomSize = totalRoomList.get(totalRoomList.indexOf(thisRoom)).userListInRoom.size();
 					for (int i = 0; i < userInRoomSize; i++) {
 						totalRoomList.get(totalRoomList.indexOf(thisRoom)).userListInRoom.get(i)
-							.pWriter.println(Protocol.CHATMESSAGE_OK + ">"
-									+ userData.getId() + ">" + line[1]);
+						.pWriter.println(Protocol.CHATMESSAGE_OK + ">"
+								+ userData.getId() + ">" + line[1]);
 						totalRoomList.get(totalRoomList.indexOf(thisRoom)).userListInRoom.get(i)
 							.pWriter.flush();
 					}
@@ -407,11 +430,6 @@ public class ServerHandler extends Thread {
 							+ "-");
 				}
 			}
-//			for (int i = 0; i < standbyUserList.size(); i++) {
-//				// 다른사용자들이 만들어진 방을 볼 수 있도록
-//				standbyUserList.get(i).pWriter.println(Protocol.CHATROOMSUBINFO + ">" + roomListLine);
-//				standbyUserList.get(i).pWriter.flush();
-//			}
 		} else {
 			roomListLine = "-";
 		}
@@ -435,18 +453,29 @@ public class ServerHandler extends Thread {
 				index = i;
 			}
 		}
+		
 		System.out.println("[대화방 입장] (" + this.userData.getId() + ")-" + enterRoom_num + "번 방");
 		
 		String roomListLine = "";
 		for (int i = 0; i < totalRoomList.size(); i++) {
-			roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
-					+ totalRoomList.get(i).getTitle() + "@"
-					+ totalRoomList.get(i).getRoom_Password() + "@" 
-					+ totalRoomList.get(i).getUser_Count() + "@"
-					+ totalRoomList.get(i).getAdmin() + "@" 
-					+ totalRoomList.get(i).getPriv() + "@"
-					+ totalRoomList.get(i).getUserCountInRoom() 
-					+ "-");
+			if (totalRoomList.get(i).getPriv() == 1) {
+				roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+						+ totalRoomList.get(i).getTitle() + "@"
+						+ totalRoomList.get(i).getRoom_Password() + "@" 
+						+ totalRoomList.get(i).getUser_Count() + "@"
+						+ totalRoomList.get(i).getAdmin() + "@" 
+						+ totalRoomList.get(i).getPriv() + "@"
+						+ totalRoomList.get(i).getUserCountInRoom() 
+						+ "-");
+			} else if (totalRoomList.get(i).getPriv() == 0) {
+				roomListLine += (totalRoomList.get(i).getRoom_Num() + "@" 
+						+ totalRoomList.get(i).getTitle() + "@"
+						+ totalRoomList.get(i).getUser_Count() + "@" 
+						+ totalRoomList.get(i).getAdmin() + "@"
+						+ totalRoomList.get(i).getPriv() + "@" 
+						+ totalRoomList.get(i).getUserCountInRoom() 
+						+ "-");
+			}
 		}
 		
 		for (int i = 0; i < standbyUserList.size(); i++) {

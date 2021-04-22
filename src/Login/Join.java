@@ -47,7 +47,8 @@ public class Join extends JFrame{
 	}
 
 	private void JoinGUI() {
-getContentPane().setLayout(null);
+
+		getContentPane().setLayout(null);
 		
 		iconLogo = new ImageIcon(".\\icon\\logo.png");
 		imgLogo = iconLogo.getImage();

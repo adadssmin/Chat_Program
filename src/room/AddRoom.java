@@ -2,6 +2,7 @@ package room;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -99,8 +100,13 @@ public class AddRoom extends JButton implements ActionListener{
 					JOptionPane.showMessageDialog(null, "인원수 초과");
 				} else if (labelArr[2].getText().equals("[비밀방]")) {
 					passwordCon.setVisible(true);
+					EventQueue.invokeLater(new Runnable() {
+						   @Override
+						     public void run() {
+						        pf_passwordConfirm.requestFocus();
+						     }
+						});
 				} else {
-					System.out.println(label[2]);
 					pWriter.println(Protocol.ENTER + ">" + labelArr[0].getText());
 					pWriter.flush();
 				}

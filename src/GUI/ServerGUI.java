@@ -8,10 +8,20 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import lunch.Server;
+
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ServerGUI extends JFrame{
-
+	public JButton btn_ServerStop, btn_ServerOpen;
+	public Server server;
+	public JTextArea txtArea_ServerState;
 	private JTextField txtField_Port;
 	private JTextField txtField_Ip;
 
@@ -19,8 +29,8 @@ public class ServerGUI extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ServerGUI server = new ServerGUI();
-					server.setVisible(true);
+					ServerGUI server1 = new ServerGUI();
+					server1.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -45,19 +55,38 @@ public class ServerGUI extends JFrame{
 		getContentPane().add(panel);
 		panel.setLayout(null);
 		
-		JTextArea txtArea_ServerState = new JTextArea();
+		txtArea_ServerState = new JTextArea();
 		txtArea_ServerState.setBounds(14, 55, 550, 434);
 		panel.add(txtArea_ServerState);
 		
-		JButton btn_ServerOpen = new JButton("\uC11C\uBC84 \uC624\uD508");
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				server = new Server();
+			}
+		});
+		
+		btn_ServerOpen = new JButton("\uC11C\uBC84 \uC624\uD508");
 		btn_ServerOpen.setBackground(new Color(173, 216, 230));
 		btn_ServerOpen.setBounds(14, 501, 105, 27);
 		panel.add(btn_ServerOpen);
+		btn_ServerOpen.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				t.start();
+				btn_ServerOpen.setEnabled(false);
+			}
+		});
 		
-		JButton btn_ServerStop = new JButton("\uC11C\uBC84 \uC911\uC9C0");
+		btn_ServerStop = new JButton("\uC11C\uBC84 \uC911\uC9C0");
 		btn_ServerStop.setBackground(new Color(173, 216, 230));
 		btn_ServerStop.setBounds(125, 501, 105, 27);
 		panel.add(btn_ServerStop);
+		btn_ServerStop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		
 		JLabel lbl_port = new JLabel("PORT : ");
 		lbl_port.setBounds(405, 25, 62, 18);
