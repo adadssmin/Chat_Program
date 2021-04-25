@@ -95,7 +95,10 @@ public class AddRoom extends JButton implements ActionListener{
 			int isOk = JOptionPane.showConfirmDialog(this, labelArr[0].getText() 
 					+ "번 방에 입장하시겠습니까?", "", JOptionPane.OK_CANCEL_OPTION);
 			if (isOk == JOptionPane.OK_OPTION) {
-				String userCount[] = labelArr[5].getText().split("/");
+				String userCount[] = labelArr[5].getText().split(" / ");
+				System.out.println(labelArr[5].getText());
+				System.out.println(userCount[0]);
+				System.out.println(userCount[1]);
 				if (userCount[0].compareTo(userCount[1]) == 0) {
 					JOptionPane.showMessageDialog(null, "인원수 초과");
 				} else if (labelArr[2].getText().equals("[비밀방]")) {
